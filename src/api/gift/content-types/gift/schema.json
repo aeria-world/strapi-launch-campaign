@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gifts",
+  "info": {
+    "singularName": "gift",
+    "pluralName": "gifts",
+    "displayName": "Gift"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "totalQuantity": {
+      "type": "biginteger",
+      "required": false,
+      "min": "0"
+    },
+    "remainingQuantity": {
+      "type": "biginteger",
+      "required": false,
+      "min": "0"
+    },
+    "probability": {
+      "type": "biginteger",
+      "required": true,
+      "unique": false,
+      "min": "1"
+    },
+    "isActive": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "gifts"
+    }
+  }
+}

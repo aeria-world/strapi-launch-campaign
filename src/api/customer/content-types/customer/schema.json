@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "customers",
+  "info": {
+    "singularName": "customer",
+    "pluralName": "customers",
+    "displayName": "customer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "upin": {
+      "type": "text",
+      "required": true,
+      "unique": true
+    },
+    "deviceId": {
+      "type": "text",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "text"
+    }
+  }
+}

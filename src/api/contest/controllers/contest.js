@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- *  about controller
+ * contest controller
  */
 
 // @ts-ignore
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::about.about');
+module.exports = createCoreController('api::contest.contest');
