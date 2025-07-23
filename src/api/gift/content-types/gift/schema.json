@@ -43,16 +43,11 @@
       "unique": false,
       "min": "1"
     },
-    "isActive": {
-      "type": "boolean",
-      "required": true,
-      "default": true
-    },
-    "contest": {
+    "contest_enrollments": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::contest.contest",
-      "inversedBy": "gifts"
+      "relation": "oneToMany",
+      "target": "api::contest-enrollment.contest-enrollment",
+      "mappedBy": "gift"
     }
   }
 }

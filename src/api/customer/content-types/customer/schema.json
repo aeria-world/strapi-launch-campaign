@@ -23,6 +23,12 @@
     },
     "name": {
       "type": "text"
+    },
+    "contest_enrollment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest-enrollment.contest-enrollment",
+      "inversedBy": "customers"
     }
   }
 }
