@@ -418,11 +418,7 @@ export interface ApiContestEnrollmentContestEnrollment
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    customers: Schema.Attribute.Relation<'oneToMany', 'api::customer.customer'>;
-    enrollmentDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    gift: Schema.Attribute.Relation<'manyToOne', 'api::gift.gift'>;
-    giftAllocatedAt: Schema.Attribute.DateTime;
-    giftClaimedAt: Schema.Attribute.DateTime;
+    customer: Schema.Attribute.Relation<'manyToOne', 'api::customer.customer'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -431,7 +427,6 @@ export interface ApiContestEnrollmentContestEnrollment
       Schema.Attribute.Private;
     prize: Schema.Attribute.Relation<'manyToOne', 'api::prize.prize'>;
     prizeAllocatedAt: Schema.Attribute.DateTime;
-    prizeClaimedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -464,9 +459,8 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
       'api::contest.contest'
     > &
       Schema.Attribute.Private;
-    maxGifts: Schema.Attribute.BigInteger;
     name: Schema.Attribute.Text & Schema.Attribute.Required;
-    phases: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'>;
+    prizes: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -485,8 +479,8 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    contest_enrollment: Schema.Attribute.Relation<
-      'manyToOne',
+    contest_enrollments: Schema.Attribute.Relation<
+      'oneToMany',
       'api::contest-enrollment.contest-enrollment'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -501,7 +495,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
       'api::customer.customer'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.Text;
+    name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -509,61 +503,6 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     upin: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
-  };
-}
-
-export interface ApiGiftGift extends Struct.CollectionTypeSchema {
-  collectionName: 'gifts';
-  info: {
-    displayName: 'Gift';
-    pluralName: 'gifts';
-    singularName: 'gift';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    contest_enrollments: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::contest-enrollment.contest-enrollment'
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
-      Schema.Attribute.Private;
-    probability: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '1';
-        },
-        string
-      >;
-    publishedAt: Schema.Attribute.DateTime;
-    remainingQuantity: Schema.Attribute.BigInteger &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '0';
-        },
-        string
-      >;
-    title: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    totalQuantity: Schema.Attribute.BigInteger &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '0';
-        },
-        string
-      >;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
   };
 }
 
@@ -599,40 +538,6 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
-  collectionName: 'phases';
-  info: {
-    displayName: 'phase';
-    pluralName: 'phases';
-    singularName: 'phase';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
-      Schema.Attribute.Private;
-    phaseNumber: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '1';
-        },
-        string
-      >;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
   collectionName: 'prizes';
   info: {
@@ -644,6 +549,7 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
@@ -653,6 +559,7 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'> &
       Schema.Attribute.Private;
@@ -664,6 +571,14 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    worth: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
   };
 }
 
@@ -1180,9 +1095,7 @@ declare module '@strapi/strapi' {
       'api::contest-enrollment.contest-enrollment': ApiContestEnrollmentContestEnrollment;
       'api::contest.contest': ApiContestContest;
       'api::customer.customer': ApiCustomerCustomer;
-      'api::gift.gift': ApiGiftGift;
       'api::global.global': ApiGlobalGlobal;
-      'api::phase.phase': ApiPhasePhase;
       'api::prize.prize': ApiPrizePrize;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

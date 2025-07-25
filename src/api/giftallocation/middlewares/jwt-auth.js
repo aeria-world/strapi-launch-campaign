@@ -10,13 +10,16 @@ const jwt = require('jsonwebtoken');
 module.exports = (config, { strapi }) => {
     return async (ctx, next) => {
         try {
-            const token = ctx.request.headers.authorization || ctx?.query?.token;
+            const token = ctx.request.headers.authorization || ctx?.query?.token || ctx?.request?.body?.token;
 
             if (!token)
                 return ctx.unauthorized('No token provided');
 
             const decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY);
             console.log('decoded -> -> ', decoded)
+
+            if (!decoded.deviceId || !decoded.userId)
+                throw new Error('Invalid Token')
 
             ctx.state.user = decoded;
 

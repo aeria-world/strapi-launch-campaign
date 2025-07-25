@@ -43,6 +43,21 @@
       "relation": "oneToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "prize"
+    },
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "prizes"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "worth": {
+      "type": "decimal",
+      "required": true,
+      "min": 1
     }
   }
 }

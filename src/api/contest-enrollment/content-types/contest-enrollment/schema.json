@@ -17,38 +17,19 @@
       "target": "api::contest.contest",
       "mappedBy": "contest_enrollment"
     },
-    "customers": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::customer.customer",
-      "mappedBy": "contest_enrollment"
-    },
-    "enrollmentDate": {
-      "type": "datetime",
-      "required": true
-    },
-    "giftAllocatedAt": {
-      "type": "datetime"
-    },
-    "giftClaimedAt": {
-      "type": "datetime"
-    },
-    "prizeClaimedAt": {
-      "type": "datetime"
-    },
     "prizeAllocatedAt": {
       "type": "datetime"
-    },
-    "gift": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::gift.gift",
-      "inversedBy": "contest_enrollments"
     },
     "prize": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::prize.prize",
+      "inversedBy": "contest_enrollments"
+    },
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::customer.customer",
       "inversedBy": "contest_enrollments"
     }
   }
