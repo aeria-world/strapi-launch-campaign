@@ -113,7 +113,7 @@ module.exports = {
                     publishedAt: { $ne: null },
                 },
             });
-            console.log(`allocatedGiftsCount -> -> ${allocatedGiftsCount}`);
+            console.log('allocatedGiftsCount -> -> ', allocatedGiftsCount);
 
             if (allocatedGiftsCount < Number(contestInfo?.maxGifts)) {
                 const arrayOfGiftIds = gifts.map(gift => gift.id);
