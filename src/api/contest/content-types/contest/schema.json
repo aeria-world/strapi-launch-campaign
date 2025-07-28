@@ -20,17 +20,20 @@
       "required": false,
       "default": true
     },
+    "phases": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::phase.phase",
+      "mappedBy": "contest"
+    },
     "contest_enrollment": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::contest-enrollment.contest-enrollment",
       "inversedBy": "contests"
     },
-    "prizes": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::prize.prize",
-      "mappedBy": "contest"
+    "maxGifts": {
+      "type": "biginteger"
     }
   }
 }

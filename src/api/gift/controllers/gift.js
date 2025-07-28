@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- * customer controller
+ * gift controller
  */
 
 // @ts-ignore
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::customer.customer');
+module.exports = createCoreController('api::gift.gift');

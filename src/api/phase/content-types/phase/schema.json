@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "phases",
+  "info": {
+    "singularName": "phase",
+    "pluralName": "phases",
+    "displayName": "phase"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "phaseNumber": {
+      "type": "biginteger",
+      "required": true,
+      "unique": true,
+      "min": "1"
+    },
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "phases"
+    }
+  }
+}

@@ -22,13 +22,13 @@
       "unique": true
     },
     "name": {
-      "type": "string"
+      "type": "text"
     },
-    "contest_enrollments": {
+    "contest_enrollment": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToOne",
       "target": "api::contest-enrollment.contest-enrollment",
-      "mappedBy": "customer"
+      "inversedBy": "customers"
     }
   }
 }

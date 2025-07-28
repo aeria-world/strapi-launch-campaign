@@ -1,8 +1,5 @@
 'use strict';
 
-// const _ = require('lodash');
-const shuffle = require('lodash/shuffle');
-
 /**
  * giftallocation service
  */
@@ -137,8 +134,9 @@ module.exports = {
         return prizeWithMedia;
     },
     fetchAllGifts: async (contestName) => {
-        if (!contestName)
+        if (!contestName) {
             throw new Error('contestName is required!!');
+        }
 
         // Find the contest by name
         const contest = await strapi.db.query('api::contest.contest').findOne({

@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * contest service
+ * gift service
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::contest.contest');
+module.exports = createCoreService('api::gift.gift');
