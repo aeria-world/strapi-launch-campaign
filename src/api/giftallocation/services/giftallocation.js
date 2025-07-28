@@ -118,15 +118,13 @@ module.exports = {
 
         // inserting the 
         promiseArr.push(
-            strapi.db.query('api::contest-enrollment.contest-enrollment').create({
+            strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
                 data: {
-                    contests: {
-                        id: contestInfo.id
-                    },
-                    customers: {
-                        id: customerInfo.id
-                    },
-                    status: 'published'
+                    contests: [contestInfo.id],
+                    customer: customerInfo.id,
+                    prize: prizeWithMedia.id,
+                    prizeAllocatedAt: new Date(),
+                    publishedAt: new Date()
                 }
             })
         );
