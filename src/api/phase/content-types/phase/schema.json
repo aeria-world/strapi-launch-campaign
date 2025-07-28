@@ -22,6 +22,12 @@
       "relation": "manyToOne",
       "target": "api::contest.contest",
       "inversedBy": "phases"
+    },
+    "startDate": {
+      "type": "datetime"
+    },
+    "endDate": {
+      "type": "datetime"
     }
   }
 }

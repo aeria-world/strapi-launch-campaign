@@ -530,13 +530,12 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
     probability: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
           min: '1';
@@ -564,6 +563,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    worth: Schema.Attribute.Decimal & Schema.Attribute.Required;
   };
 }
 
@@ -614,6 +614,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    endDate: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
       Schema.Attribute.Private;
@@ -627,6 +628,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
         string
       >;
     publishedAt: Schema.Attribute.DateTime;
+    startDate: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -652,18 +654,21 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.Text & Schema.Attribute.Required;
-    probability: Schema.Attribute.Decimal;
+    probability: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<1>;
     publishedAt: Schema.Attribute.DateTime;
     remainingQuantity: Schema.Attribute.BigInteger;
+    title: Schema.Attribute.Text & Schema.Attribute.Required;
     totalQuantity: Schema.Attribute.BigInteger;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    worth: Schema.Attribute.Decimal & Schema.Attribute.Required;
   };
 }
 

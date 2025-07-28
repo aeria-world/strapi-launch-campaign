@@ -11,7 +11,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
+    "title": {
       "type": "text",
       "required": true
     },
@@ -22,15 +22,15 @@
     "image": {
       "type": "media",
       "multiple": false,
+      "required": true,
       "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
+        "images"
       ]
     },
     "probability": {
-      "type": "decimal"
+      "type": "decimal",
+      "required": true,
+      "default": 1
     },
     "totalQuantity": {
       "type": "biginteger"
@@ -43,6 +43,10 @@
       "relation": "oneToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "prize"
+    },
+    "worth": {
+      "type": "decimal",
+      "required": true
     }
   }
 }

@@ -27,29 +27,29 @@
       "type": "datetime",
       "required": true
     },
-    "giftAllocatedAt": {
-      "type": "datetime"
-    },
-    "giftClaimedAt": {
-      "type": "datetime"
-    },
-    "prizeClaimedAt": {
-      "type": "datetime"
-    },
-    "prizeAllocatedAt": {
-      "type": "datetime"
-    },
     "gift": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::gift.gift",
       "inversedBy": "contest_enrollments"
     },
+    "giftAllocatedAt": {
+      "type": "datetime"
+    },
+    "giftClaimedAt": {
+      "type": "datetime"
+    },
     "prize": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::prize.prize",
       "inversedBy": "contest_enrollments"
+    },
+    "prizeAllocatedAt": {
+      "type": "datetime"
+    },
+    "prizeClaimedAt": {
+      "type": "datetime"
     }
   }
 }

@@ -7,31 +7,19 @@
 module.exports = {
   allocateGift: async (ctx, next) => {
     try {
-      const { token, contest } = ctx.query;
-      if (!token || !contest)
+      const { token, contestId } = ctx.request.body;
+      if (!token || !contestId)
         throw new Error('Invalid url');
 
-      const contestInfo = await strapi.db.query('api::contest.contest').findOne({
-        where: { name: contest, isActive: true },
-      });
-      console.log('contestInfo -> -> ', contestInfo)
-
-      // This block will catch both null and undefined, and also if contestInfo is an empty object
-      if (!contestInfo || Object.keys(contestInfo).length === 0) {
-        throw new Error('Contest not found');
-      }
-
-      // fetching gifts related to the provided contest
-      const gifts = await strapi.db.query('api::gift.gift').findMany({
-        where: { contest: contestInfo.id, isActive: true },
-      });
-      console.log('gifts -> -> ', gifts)
+      const data = await strapi.service('api::giftallocation.giftallocation').prizeAllocation(contestId, ctx.state.user);
 
       ctx.status = 200;
-      ctx.body = { status: 'ok' };
+      ctx.body = { status: 'ok', data };
     } catch (err) {
       console.log('error in allocateGift -> ', err)
-      ctx.body = err;
+      console.log('error message', err.message)
+      ctx.status = 500;
+      ctx.body = { error: err.message || err.toString() };
     }
   },
   fetchAllGifts: async (ctx, next) => {

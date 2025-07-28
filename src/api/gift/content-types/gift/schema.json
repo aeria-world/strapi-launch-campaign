@@ -17,7 +17,8 @@
       "unique": true
     },
     "description": {
-      "type": "text"
+      "type": "text",
+      "required": true
     },
     "image": {
       "type": "media",
@@ -39,7 +40,7 @@
     },
     "probability": {
       "type": "biginteger",
-      "required": true,
+      "required": false,
       "unique": false,
       "min": "1"
     },
@@ -48,6 +49,10 @@
       "relation": "oneToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "gift"
+    },
+    "worth": {
+      "type": "decimal",
+      "required": true
     }
   }
 }

@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (config, { strapi }) => {
     return async (ctx, next) => {
         try {
-            const token = ctx.request.headers.authorization || ctx?.query?.token;
+            const token = ctx?.request?.body?.token;
 
             if (!token)
                 return ctx.unauthorized('No token provided');
@@ -18,11 +18,14 @@ module.exports = (config, { strapi }) => {
             const decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY);
             console.log('decoded -> -> ', decoded)
 
+            if (!decoded?.userId || !decoded?.deviceId)
+                return ctx.unauthorized('Invalid token payload');
+
             ctx.state.user = decoded;
 
             await next();
         } catch (error) {
-            console.log(`error in token -> -> ${error}`)
+            console.log(`error in token -> -> `, error)
             if (error.name === 'JsonWebTokenError') {
                 return ctx.unauthorized('Invalid token');
             } else if (error.name === 'TokenExpiredError') {
