@@ -190,22 +190,21 @@ async function allocateGiftWithMaxGifts(contestInfo, gifts, customerInfo, contes
     return giftWithMedia;
 }
 
-// Helper function to allocate gift based on probability
+// Helper function to allocate gift based on probability or random selection based on totalQty and remainingQty
 async function allocateGiftWithProbability(gifts, customerInfo, contestId) {
-    const availableGifts = gifts.filter(gift => gift.remainingQuantity > 0);
+    const availableGifts = gifts.filter(gift => gift.remainingQuantity > 0 || gift.probability > 0);
     if (!availableGifts.length) {
-        throw new Error('No gifts with remaining quantity available!!');
+        throw new Error('No gifts with remaining quantity or probability available!!');
     }
 
-    // Calculate total probability
-    const totalProbability = availableGifts.reduce((sum, gift) => sum + (gift?.probability || 0), 0);
+    // Check if all gifts have probability values
+    const allHaveProbability = availableGifts.every(gift => gift.probability > 0);
 
     let selectedGift;
-    if (totalProbability <= 0) {
-        // Random selection if no valid probabilities
-        const randomIndex = Math.floor(Math.random() * availableGifts.length);
-        selectedGift = availableGifts[randomIndex];
-    } else {
+    if (allHaveProbability) {
+        // Calculate total probability
+        const totalProbability = availableGifts.reduce((sum, gift) => sum + (gift?.probability || 0), 0);
+
         // Weighted random selection
         let randomValue = Math.random() * totalProbability;
         selectedGift = availableGifts.find(gift => {
@@ -213,6 +212,10 @@ async function allocateGiftWithProbability(gifts, customerInfo, contestId) {
             randomValue -= gift.probability || 0;
             return false;
         }) || availableGifts[Math.floor(Math.random() * availableGifts.length)];
+    } else {
+        // Random selection if any gift lacks probability
+        const randomIndex = Math.floor(Math.random() * availableGifts.length);
+        selectedGift = availableGifts[randomIndex];
     }
 
     const promiseArr = [
@@ -225,13 +228,19 @@ async function allocateGiftWithProbability(gifts, customerInfo, contestId) {
                 enrollmentDate: new Date(),
                 publishedAt: new Date()
             },
-        }),
-        strapi.entityService.update('api::gift.gift', selectedGift.id, {
-            data: {
-                remainingQuantity: selectedGift.remainingQuantity - 1,
-            },
         })
     ];
+
+    // Update remaining quantity if gift has totalQuantity and remainingQuantity
+    if (selectedGift.totalQuantity !== undefined && selectedGift.remainingQuantity !== undefined) {
+        promiseArr.push(
+            strapi.entityService.update('api::gift.gift', selectedGift.id, {
+                data: {
+                    remainingQuantity: selectedGift.remainingQuantity - 1,
+                },
+            })
+        );
+    }
 
     await Promise.all(promiseArr);
 
