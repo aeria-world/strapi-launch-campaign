@@ -236,7 +236,7 @@ async function allocateGiftWithProbability(gifts, customerInfo, contestId) {
         promiseArr.push(
             strapi.entityService.update('api::gift.gift', selectedGift.id, {
                 data: {
-                    remainingQuantity: selectedGift.remainingQuantity - 1,
+                    remainingQuantity: (Number(selectedGift.remainingQuantity) - 1).toString(),
                 },
             })
         );
