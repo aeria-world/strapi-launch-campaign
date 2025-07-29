@@ -5,40 +5,33 @@ const shuffle = require('lodash/shuffle');
 /**
  * giftallocation service
  */
+
 module.exports = {
     prizeAllocation: async (contestId, userInfo) => {
-        // Validate contestId
-        if (!contestId) {
+        console.log('userInfo from service(s) -> ', userInfo)
+        if (!contestId)
             throw new Error('contestId not found!!');
-        }
 
-        // Fetch and validate contest
-        const contestInfo = await getContestInfo(contestId);
-        if (!contestInfo || Object.keys(contestInfo).length === 0) {
-            throw new Error('Requested contest not found or it might be inactive!!');
-        }
-
-        // Check if user or device has already won a gift
         const existingGift = await checkExistingGift(contestId, userInfo);
         if (existingGift) {
             return existingGift.gift && Object.keys(existingGift.gift).length ? existingGift.gift : existingGift;
         }
 
-        // Fetch or create customer
+        const contestInfo = await getContestInfo(contestId);
+        if (!contestInfo || Object.keys(contestInfo).length === 0)
+            throw new Error('Requested contest not found or it might be inactive!!');
+
         const customerInfo = await getOrCreateCustomer(userInfo);
 
-        // Fetch available gifts
+        // fetch all available gifts
         const gifts = await getAvailableGifts(contestInfo.id);
-        if (!gifts?.length) {
-            throw new Error('No gifts available right now!!');
-        }
+        if (!gifts?.length)
+            throw new Error('No gifts available right now!!')
 
-        // Allocate gift based on contest type
         return contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0
             ? await allocateGiftWithMaxGifts(contestInfo, gifts, customerInfo, contestId)
             : await allocateGiftWithProbability(gifts, customerInfo, contestId);
     },
-
     fetchAllGifts: async (contestName) => {
         if (!contestName) {
             throw new Error('contestName is required!!');
@@ -59,22 +52,25 @@ module.exports = {
             populate: { image: true }
         });
 
-        return gifts.map(gift => ({
-            documentId: gift?.documentId || '',
-            title: gift?.title || '',
-            description: gift?.description || '',
-            image: {
-                documentId: gift?.image?.documentId || '',
-                name: gift?.image?.name || '',
-                mime: gift?.image?.mime || '',
-                ext: gift?.image?.ext || '',
-                url: gift?.image?.url || ''
+        const updatedGifs = gifts.map(function (gift) {
+            return {
+                documentId: gift?.documentId || '',
+                title: gift?.title || '',
+                description: gift?.description || '',
+                image: {
+                    documentId: gift?.image?.documentId || '',
+                    name: gift?.image?.name || '',
+                    mime: gift?.image?.mime || '',
+                    ext: gift?.image?.ext || '',
+                    url: gift?.image?.url || ''
+                }
             }
-        }));
+        })
+
+        return updatedGifs;
     }
 };
 
-// Helper function to check if user or device has already won a gift
 async function checkExistingGift(contestId, userInfo) {
     const [isPrizeAlreadyAllocatedToUser, isPrizeAlreadyAllocatedToDevice] = await Promise.all([
         strapi.db.query('api::contest-enrollment.contest-enrollment').findOne({
@@ -93,7 +89,7 @@ async function checkExistingGift(contestId, userInfo) {
         }),
         strapi.db.query('api::contest-enrollment.contest-enrollment').findOne({
             where: {
-                contestants: { documentId: contestId },
+                contests: { documentId: contestId },
                 customers: { deviceId: userInfo.deviceId },
                 publishedAt: { $ne: null },
                 giftAllocatedAt: { $ne: null }
@@ -107,8 +103,8 @@ async function checkExistingGift(contestId, userInfo) {
         })
     ]);
 
-    console.log('isPrizeAlreadyAllocatedToUser ->', isPrizeAlreadyAllocatedToUser);
-    console.log('isPrizeAlreadyAllocatedToDevice ->', isPrizeAlreadyAllocatedToDevice);
+    console.log('isPrizeAlreadyAllocatedToUser -> -> ', isPrizeAlreadyAllocatedToUser);
+    console.log('isPrizeAlreadyAllocatedToDevice -> -> ', isPrizeAlreadyAllocatedToDevice);
 
     return isPrizeAlreadyAllocatedToUser || isPrizeAlreadyAllocatedToDevice;
 }
