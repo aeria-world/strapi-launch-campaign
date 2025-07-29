@@ -53,6 +53,12 @@
     "worth": {
       "type": "decimal",
       "required": true
+    },
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "gifts"
     }
   }
 }

@@ -34,6 +34,12 @@
     },
     "maxGifts": {
       "type": "biginteger"
+    },
+    "gifts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::gift.gift",
+      "mappedBy": "contest"
     }
   }
 }

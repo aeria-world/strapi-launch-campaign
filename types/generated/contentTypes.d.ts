@@ -457,6 +457,7 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -523,6 +524,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
