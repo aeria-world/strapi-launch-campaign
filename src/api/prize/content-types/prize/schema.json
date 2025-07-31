@@ -11,32 +11,16 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "text",
-      "required": true
-    },
-    "description": {
-      "type": "text",
-      "required": true
-    },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "probability": {
-      "type": "decimal",
-      "required": true,
-      "default": 1
-    },
     "totalQuantity": {
       "type": "biginteger"
     },
     "remainingQuantity": {
       "type": "biginteger"
+    },
+    "probability": {
+      "type": "decimal",
+      "required": true,
+      "default": 1
     },
     "contest_enrollments": {
       "type": "relation",
@@ -44,9 +28,11 @@
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "prize"
     },
-    "worth": {
-      "type": "decimal",
-      "required": true
+    "contests": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::contest.contest",
+      "mappedBy": "prizes"
     }
   }
 }

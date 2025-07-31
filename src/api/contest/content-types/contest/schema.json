@@ -12,7 +12,7 @@
   "pluginOptions": {},
   "attributes": {
     "name": {
-      "type": "text",
+      "type": "string",
       "required": true
     },
     "isActive": {
@@ -40,6 +40,12 @@
       "relation": "oneToMany",
       "target": "api::gift.gift",
       "mappedBy": "contest"
+    },
+    "prizes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::prize.prize",
+      "inversedBy": "contests"
     }
   }
 }

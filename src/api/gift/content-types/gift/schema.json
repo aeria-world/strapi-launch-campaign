@@ -11,23 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string",
-      "required": true,
-      "unique": true
-    },
-    "description": {
-      "type": "text",
-      "required": true
-    },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "images"
-      ]
-    },
     "totalQuantity": {
       "type": "biginteger",
       "required": false,
@@ -40,9 +23,10 @@
     },
     "probability": {
       "type": "biginteger",
-      "required": false,
+      "required": true,
       "unique": false,
-      "min": "1"
+      "min": "0",
+      "max": "100"
     },
     "contest_enrollments": {
       "type": "relation",
@@ -50,14 +34,16 @@
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "gift"
     },
-    "worth": {
-      "type": "decimal",
-      "required": true
-    },
     "contest": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::contest.contest",
+      "inversedBy": "gifts"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
       "inversedBy": "gifts"
     }
   }

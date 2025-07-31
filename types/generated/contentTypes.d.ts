@@ -466,8 +466,9 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     maxGifts: Schema.Attribute.BigInteger;
-    name: Schema.Attribute.Text & Schema.Attribute.Required;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     phases: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'>;
+    prizes: Schema.Attribute.Relation<'manyToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -532,18 +533,19 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
     probability: Schema.Attribute.BigInteger &
+      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
-          min: '1';
+          max: '100';
+          min: '0';
         },
         string
       >;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     remainingQuantity: Schema.Attribute.BigInteger &
       Schema.Attribute.SetMinMax<
@@ -552,9 +554,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
         },
         string
       >;
-    title: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
     totalQuantity: Schema.Attribute.BigInteger &
       Schema.Attribute.SetMinMax<
         {
@@ -565,7 +564,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    worth: Schema.Attribute.Decimal & Schema.Attribute.Required;
   };
 }
 
@@ -652,11 +650,10 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
     >;
+    contests: Schema.Attribute.Relation<'manyToMany', 'api::contest.contest'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'> &
       Schema.Attribute.Private;
@@ -665,12 +662,44 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<1>;
     publishedAt: Schema.Attribute.DateTime;
     remainingQuantity: Schema.Attribute.BigInteger;
-    title: Schema.Attribute.Text & Schema.Attribute.Required;
     totalQuantity: Schema.Attribute.BigInteger;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    worth: Schema.Attribute.Decimal & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiProductProduct extends Struct.CollectionTypeSchema {
+  collectionName: 'products';
+  info: {
+    displayName: 'Product';
+    pluralName: 'products';
+    singularName: 'product';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.String & Schema.Attribute.Required;
+    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
+    image: Schema.Attribute.Media<'images', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product.product'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    remainingQuantity: Schema.Attribute.BigInteger & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    totalQuantity: Schema.Attribute.BigInteger & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    worth: Schema.Attribute.BigInteger & Schema.Attribute.Required;
   };
 }
 
@@ -1191,6 +1220,7 @@ declare module '@strapi/strapi' {
       'api::global.global': ApiGlobalGlobal;
       'api::phase.phase': ApiPhasePhase;
       'api::prize.prize': ApiPrizePrize;
+      'api::product.product': ApiProductProduct;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
