@@ -4,7 +4,7 @@
   "info": {
     "singularName": "contest-enrollment",
     "pluralName": "contest-enrollments",
-    "displayName": "contestEnrollment"
+    "displayName": "Contest Enrollments"
   },
   "options": {
     "draftAndPublish": true

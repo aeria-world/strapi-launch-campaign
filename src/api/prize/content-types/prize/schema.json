@@ -4,7 +4,7 @@
   "info": {
     "singularName": "prize",
     "pluralName": "prizes",
-    "displayName": "prize"
+    "displayName": "Prize"
   },
   "options": {
     "draftAndPublish": true

@@ -406,7 +406,7 @@ export interface ApiContestEnrollmentContestEnrollment
   extends Struct.CollectionTypeSchema {
   collectionName: 'contest_enrollments';
   info: {
-    displayName: 'contestEnrollment';
+    displayName: 'Contest Enrollments';
     pluralName: 'contest-enrollments';
     singularName: 'contest-enrollment';
   };
@@ -442,7 +442,7 @@ export interface ApiContestEnrollmentContestEnrollment
 export interface ApiContestContest extends Struct.CollectionTypeSchema {
   collectionName: 'contests';
   info: {
-    displayName: 'contest';
+    displayName: 'Contest';
     pluralName: 'contests';
     singularName: 'contest';
   };
@@ -478,7 +478,7 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
 export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
   collectionName: 'customers';
   info: {
-    displayName: 'customer';
+    displayName: 'Employee';
     pluralName: 'customers';
     singularName: 'customer';
   };
@@ -604,7 +604,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
 export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
   collectionName: 'phases';
   info: {
-    displayName: 'phase';
+    displayName: 'Phase';
     pluralName: 'phases';
     singularName: 'phase';
   };
@@ -640,7 +640,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
 export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
   collectionName: 'prizes';
   info: {
-    displayName: 'prize';
+    displayName: 'Prize';
     pluralName: 'prizes';
     singularName: 'prize';
   };

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "phase",
     "pluralName": "phases",
-    "displayName": "phase"
+    "displayName": "Phase"
   },
   "options": {
     "draftAndPublish": true

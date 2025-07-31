@@ -4,7 +4,7 @@
   "info": {
     "singularName": "contest",
     "pluralName": "contests",
-    "displayName": "contest"
+    "displayName": "Contest"
   },
   "options": {
     "draftAndPublish": true

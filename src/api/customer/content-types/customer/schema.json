@@ -4,7 +4,7 @@
   "info": {
     "singularName": "customer",
     "pluralName": "customers",
-    "displayName": "customer"
+    "displayName": "Employee"
   },
   "options": {
     "draftAndPublish": true
