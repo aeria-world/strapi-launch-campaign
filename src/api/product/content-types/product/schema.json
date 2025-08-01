@@ -19,14 +19,6 @@
       "type": "string",
       "required": true
     },
-    "totalQuantity": {
-      "type": "biginteger",
-      "required": true
-    },
-    "remainingQuantity": {
-      "type": "biginteger",
-      "required": true
-    },
     "worth": {
       "type": "biginteger",
       "required": true

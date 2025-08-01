@@ -693,9 +693,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    remainingQuantity: Schema.Attribute.BigInteger & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    totalQuantity: Schema.Attribute.BigInteger & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
