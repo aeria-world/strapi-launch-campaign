@@ -34,18 +34,6 @@
     },
     "maxGifts": {
       "type": "biginteger"
-    },
-    "gifts": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::gift.gift",
-      "mappedBy": "contest"
-    },
-    "prizes": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::prize.prize",
-      "inversedBy": "contests"
     }
   }
 }

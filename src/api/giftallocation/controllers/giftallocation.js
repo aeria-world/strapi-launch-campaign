@@ -7,9 +7,9 @@
 module.exports = {
   allocateGift: async (ctx, next) => {
     try {
-      const { token, contestId } = ctx.request.body;
-      if (!token || !contestId)
-        throw new Error('Invalid url');
+      const { contestId } = ctx.request.body;
+      if (!contestId)
+        throw new Error('Contest ID is required!!');
 
       const data = await strapi.service('api::giftallocation.giftallocation').prizeAllocation(contestId, ctx.state.user);
 
@@ -22,15 +22,15 @@ module.exports = {
       ctx.body = { error: err.message || err.toString() };
     }
   },
-  fetchAllGifts: async (ctx, next) => {
-    try {
-      const { contestName } = ctx.query;
-      const gifts = await strapi.service('api::giftallocation.giftallocation').fetchAllGifts(contestName);
-      ctx.body = gifts;
-    } catch (error) {
-      console.log('error in fetchAllGifts -> ', error)
-      ctx.status = 400;
-      ctx.body = { error: error.message || error.toString() };
-    }
-  }
+  // fetchAllGifts: async (ctx, next) => {
+  //   try {
+  //     const { contestName } = ctx.query;
+  //     const gifts = await strapi.service('api::giftallocation.giftallocation').fetchAllGifts(contestName);
+  //     ctx.body = gifts;
+  //   } catch (error) {
+  //     console.log('error in fetchAllGifts -> ', error)
+  //     ctx.status = 400;
+  //     ctx.body = { error: error.message || error.toString() };
+  //   }
+  // }
 };

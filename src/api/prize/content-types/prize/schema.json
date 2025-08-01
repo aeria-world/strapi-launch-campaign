@@ -12,7 +12,9 @@
   "pluginOptions": {},
   "attributes": {
     "totalQuantity": {
-      "type": "biginteger"
+      "type": "biginteger",
+      "required": true,
+      "min": "1"
     },
     "remainingQuantity": {
       "type": "biginteger"
@@ -27,12 +29,6 @@
       "relation": "oneToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "prize"
-    },
-    "contests": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::contest.contest",
-      "mappedBy": "prizes"
     }
   }
 }

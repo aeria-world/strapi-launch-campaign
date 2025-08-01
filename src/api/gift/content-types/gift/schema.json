@@ -13,8 +13,8 @@
   "attributes": {
     "totalQuantity": {
       "type": "biginteger",
-      "required": false,
-      "min": "0"
+      "required": true,
+      "min": "1"
     },
     "remainingQuantity": {
       "type": "biginteger",
@@ -34,16 +34,16 @@
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "gift"
     },
-    "contest": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::contest.contest",
-      "inversedBy": "gifts"
-    },
     "product": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
+      "inversedBy": "gifts"
+    },
+    "phase": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::phase.phase",
       "inversedBy": "gifts"
     }
   }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 /**
@@ -6,4 +7,22 @@
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::phase.phase');
+module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
+    findRunningPhase: async (contestId) => {
+        if (!contestId)
+            throw new Error('contestId is required!!');
+
+        const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+        const currentPhase = await strapi.db.query('api::phase.phase').findOne({
+            where: {
+                contest: contestId,
+                startDate: { $lte: today },
+                endDate: { $gte: today }
+            },
+            populate: ['gifts']
+        });
+
+        return currentPhase;
+    }
+}));

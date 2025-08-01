@@ -11,12 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "phaseNumber": {
-      "type": "biginteger",
-      "required": true,
-      "unique": true,
-      "min": "1"
-    },
     "contest": {
       "type": "relation",
       "relation": "manyToOne",
@@ -24,10 +18,18 @@
       "inversedBy": "phases"
     },
     "startDate": {
-      "type": "datetime"
+      "type": "date",
+      "required": true
     },
     "endDate": {
-      "type": "datetime"
+      "type": "date",
+      "required": true
+    },
+    "gifts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::gift.gift",
+      "mappedBy": "phase"
     }
   }
 }

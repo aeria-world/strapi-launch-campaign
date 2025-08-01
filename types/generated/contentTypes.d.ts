@@ -457,7 +457,6 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -468,7 +467,6 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     maxGifts: Schema.Attribute.BigInteger;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phases: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'>;
-    prizes: Schema.Attribute.Relation<'manyToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -479,7 +477,7 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
 export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
   collectionName: 'customers';
   info: {
-    displayName: 'Employee';
+    displayName: 'Customer';
     pluralName: 'customers';
     singularName: 'customer';
   };
@@ -525,7 +523,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
@@ -536,6 +533,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
+    phase: Schema.Attribute.Relation<'manyToOne', 'api::phase.phase'>;
     probability: Schema.Attribute.BigInteger &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -555,9 +553,10 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
         string
       >;
     totalQuantity: Schema.Attribute.BigInteger &
+      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
-          min: '0';
+          min: '1';
         },
         string
       >;
@@ -614,21 +613,13 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    endDate: Schema.Attribute.DateTime;
+    endDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
       Schema.Attribute.Private;
-    phaseNumber: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '1';
-        },
-        string
-      >;
     publishedAt: Schema.Attribute.DateTime;
-    startDate: Schema.Attribute.DateTime;
+    startDate: Schema.Attribute.Date & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -650,7 +641,6 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
     >;
-    contests: Schema.Attribute.Relation<'manyToMany', 'api::contest.contest'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -662,7 +652,14 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<1>;
     publishedAt: Schema.Attribute.DateTime;
     remainingQuantity: Schema.Attribute.BigInteger;
-    totalQuantity: Schema.Attribute.BigInteger;
+    totalQuantity: Schema.Attribute.BigInteger &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: '1';
+        },
+        string
+      >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
