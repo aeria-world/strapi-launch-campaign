@@ -12,17 +12,26 @@
   "pluginOptions": {},
   "attributes": {
     "totalQuantity": {
-      "type": "biginteger",
-      "required": true,
-      "min": "1"
+      "type": "biginteger"
     },
     "remainingQuantity": {
       "type": "biginteger"
     },
     "probability": {
-      "type": "decimal",
-      "required": true,
+      "type": "integer",
       "default": 1
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "prizes"
+    },
+    "phase": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::phase.phase",
+      "inversedBy": "prizes"
     },
     "contest_enrollments": {
       "type": "relation",

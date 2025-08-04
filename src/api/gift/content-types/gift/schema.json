@@ -40,10 +40,10 @@
       "target": "api::product.product",
       "inversedBy": "gifts"
     },
-    "phase": {
+    "contest": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::phase.phase",
+      "target": "api::contest.contest",
       "inversedBy": "gifts"
     }
   }

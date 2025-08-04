@@ -457,6 +457,7 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -523,6 +524,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
@@ -533,7 +535,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
-    phase: Schema.Attribute.Relation<'manyToOne', 'api::phase.phase'>;
     probability: Schema.Attribute.BigInteger &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -613,13 +614,14 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    endDate: Schema.Attribute.Date & Schema.Attribute.Required;
-    gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
+    endDate: Schema.Attribute.Date;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    prizes: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
-    startDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    startDate: Schema.Attribute.Date;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -647,19 +649,12 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'> &
       Schema.Attribute.Private;
-    probability: Schema.Attribute.Decimal &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<1>;
+    phase: Schema.Attribute.Relation<'manyToOne', 'api::phase.phase'>;
+    probability: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     remainingQuantity: Schema.Attribute.BigInteger;
-    totalQuantity: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '1';
-        },
-        string
-      >;
+    totalQuantity: Schema.Attribute.BigInteger;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -677,6 +672,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    allocated: Schema.Attribute.BigInteger;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -689,6 +685,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'api::product.product'
     > &
       Schema.Attribute.Private;
+    prizes: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;

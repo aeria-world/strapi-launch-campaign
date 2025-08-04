@@ -11,7 +11,7 @@ module.exports = {
       if (!contestId)
         throw new Error('Contest ID is required!!');
 
-      const data = await strapi.service('api::giftallocation.giftallocation').prizeAllocation(contestId, ctx.state.user);
+      const data = await strapi.service('api::giftallocation.giftallocation').giftAllocation(contestId, ctx.state.user);
 
       ctx.status = 200;
       ctx.body = { status: 'ok', data };

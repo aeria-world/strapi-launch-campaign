@@ -35,6 +35,15 @@
       "relation": "oneToMany",
       "target": "api::gift.gift",
       "mappedBy": "product"
+    },
+    "prizes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::prize.prize",
+      "mappedBy": "product"
+    },
+    "allocated": {
+      "type": "biginteger"
     }
   }
 }

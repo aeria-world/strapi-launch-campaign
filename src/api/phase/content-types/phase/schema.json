@@ -11,24 +11,26 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "endDate": {
+      "type": "date"
+    },
     "contest": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::contest.contest",
       "inversedBy": "phases"
     },
-    "startDate": {
-      "type": "date",
-      "required": true
-    },
-    "endDate": {
-      "type": "date",
-      "required": true
-    },
-    "gifts": {
+    "prizes": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::gift.gift",
+      "target": "api::prize.prize",
       "mappedBy": "phase"
     }
   }

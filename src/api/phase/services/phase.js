@@ -20,7 +20,7 @@ module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
                 startDate: { $lte: today },
                 endDate: { $gte: today }
             },
-            populate: ['gifts']
+            populate: ['prizes']
         });
 
         return currentPhase;
