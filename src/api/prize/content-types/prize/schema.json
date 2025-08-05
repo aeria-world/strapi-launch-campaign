@@ -38,6 +38,10 @@
       "relation": "oneToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "mappedBy": "prize"
+    },
+    "minEnrollment": {
+      "type": "biginteger",
+      "default": "0"
     }
   }
 }

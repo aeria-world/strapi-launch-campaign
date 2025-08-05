@@ -44,117 +44,9 @@ module.exports = {
         console.log('customerInfo -> ', customerInfo);
 
         return (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
-            ? await allocateGiftWithMaxGifts(contestInfo, customerInfo)
-            : await allocateGiftWithProbability(contestInfo, customerInfo);
+            ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo)
+            : await allocateGiftsWithRemaining(contestInfo, customerInfo);
     }
-    // prizeAllocation: async (contestId, userInfo) => {
-
-    //     const runningPhase = await strapi.service('api::phase.phase').findRunningPhase(contestInfo.id);
-    //     console.log('runningPhase -> ', runningPhase);
-    //     if (!runningPhase)
-    //         throw new Error('No running phase found for this contest!!');
-
-    //     const customerInfo = await getOrCreateCustomer(userInfo);
-    //     console.log('customerInfo -> ', customerInfo);
-
-    //     return (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
-    //         ? await allocateGiftWithMaxGifts(contestInfo, prizes, customerInfo, contestInfo.id)
-    //         : await allocateGiftWithProbability(prizes, customerInfo, contestInfo.id);
-    // },
-
-    // // Get currently running phase for a contest
-    // getRunningPhase: async (contestId) => {
-    //     if (!contestId) {
-    //         throw new Error('contestId is required to find running phase');
-    //     }
-
-    //     const runningPhase = await strapi.service('api::phase.phase').findRunningPhase(contestId);
-
-    //     if (!runningPhase) {
-    //         throw new Error('No running phase found for this contest');
-    //     }
-
-    //     return runningPhase;
-    // },
-
-    // // Get all running phases across all contests
-    // getAllRunningPhases: async () => {
-    //     const runningPhases = await strapi.service('api::phase.phase').findAllRunningPhases();
-    //     return runningPhases;
-    // },
-
-    // // Get gifts from currently running phase
-    // getGiftsFromRunningPhase: async (contestId) => {
-    //     const runningPhase = await strapi.service('api::giftallocation.giftallocation').getRunningPhase(contestId);
-
-    //     if (!runningPhase.gifts || runningPhase.gifts.length === 0) {
-    //         throw new Error('No gifts available in the currently running phase');
-    //     }
-
-    //     return runningPhase.gifts;
-    // }
-    // prizeAllocation: async (contestId, userInfo) => {
-    //     console.log('userInfo from service(s) -> ', userInfo)
-    //     if (!contestId)
-    //         throw new Error('contestId not found!!');
-
-    //     const existingGift = await checkExistingGift(contestId, userInfo);
-    //     if (existingGift) {
-    //         return existingGift.gift && Object.keys(existingGift.gift).length ? existingGift.gift : existingGift;
-    //     }
-
-    //     const contestInfo = await getContestInfo(contestId);
-    //     if (!contestInfo || Object.keys(contestInfo).length === 0)
-    //         throw new Error('Requested contest not found or it might be inactive!!');
-
-    //     const customerInfo = await getOrCreateCustomer(userInfo);
-
-    //     // fetch all available gifts
-    //     const gifts = await getAvailableGifts(contestInfo.id);
-    //     if (!gifts?.length)
-    //         throw new Error('No gifts available right now!!')
-
-    //     return contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0
-    //         ? await allocateGiftWithMaxGifts(contestInfo, gifts, customerInfo, contestId)
-    //         : await allocateGiftWithProbability(gifts, customerInfo, contestId);
-    // },
-    // fetchAllGifts: async (contestName) => {
-    //     if (!contestName) {
-    //         throw new Error('contestName is required!!');
-    //     }
-
-    //     // Find the contest by name
-    //     const contest = await strapi.db.query('api::contest.contest').findOne({
-    //         where: { name: contestName },
-    //     });
-
-    //     if (!contest) {
-    //         throw new Error('Contest not found');
-    //     }
-
-    //     // Fetch all gifts related to the contest
-    //     const gifts = await strapi.db.query('api::gift.gift').findMany({
-    //         where: { contest: contest.id },
-    //         populate: { image: true }
-    //     });
-
-    //     const updatedGifs = gifts.map(function (gift) {
-    //         return {
-    //             documentId: gift?.documentId || '',
-    //             title: gift?.title || '',
-    //             description: gift?.description || '',
-    //             image: {
-    //                 documentId: gift?.image?.documentId || '',
-    //                 name: gift?.image?.name || '',
-    //                 mime: gift?.image?.mime || '',
-    //                 ext: gift?.image?.ext || '',
-    //                 url: gift?.image?.url || ''
-    //             }
-    //         }
-    //     })
-
-    //     return updatedGifs;
-    // }
 };
 
 async function checkExistingGift(contestId, userInfo) {
@@ -203,44 +95,6 @@ async function checkExistingGift(contestId, userInfo) {
     return isPrizeAlreadyAllocatedToUser || isPrizeAlreadyAllocatedToDevice;
 }
 
-// async function checkExistingGift(contestId, userInfo) {
-//     const [isPrizeAlreadyAllocatedToUser, isPrizeAlreadyAllocatedToDevice] = await Promise.all([
-//         strapi.db.query('api::contest-enrollment.contest-enrollment').findOne({
-//             where: {
-//                 contests: { documentId: contestId },
-//                 customers: { upin: userInfo.userId },
-//                 publishedAt: { $ne: null },
-//                 giftAllocatedAt: { $ne: null }
-//             },
-//             populate: {
-//                 gift: {
-//                     fields: ['title', 'description', 'worth'],
-//                     populate: { image: { fields: ['url', 'name'] } }
-//                 }
-//             }
-//         }),
-//         strapi.db.query('api::contest-enrollment.contest-enrollment').findOne({
-//             where: {
-//                 contests: { documentId: contestId },
-//                 customers: { deviceId: userInfo.deviceId },
-//                 publishedAt: { $ne: null },
-//                 giftAllocatedAt: { $ne: null }
-//             },
-//             populate: {
-//                 gift: {
-//                     fields: ['title', 'description', 'worth'],
-//                     populate: { image: { fields: ['url', 'name'] } }
-//                 }
-//             }
-//         })
-//     ]);
-
-//     console.log('isPrizeAlreadyAllocatedToUser -> -> ', isPrizeAlreadyAllocatedToUser);
-//     console.log('isPrizeAlreadyAllocatedToDevice -> -> ', isPrizeAlreadyAllocatedToDevice);
-
-//     return isPrizeAlreadyAllocatedToUser || isPrizeAlreadyAllocatedToDevice;
-// }
-
 // Helper function to fetch contest information
 async function getContestInfo(contestId) {
     return await strapi.db.query('api::contest.contest').findOne({
@@ -278,17 +132,9 @@ async function getOrCreateCustomer(userInfo) {
     return customerInfo;
 }
 
-// // Helper function to fetch available gifts
-// async function getAvailableGifts(contestId) {
-//     const gifts = await strapi.db.query('api::gift.gift').findMany({
-//         where: { publishedAt: { $ne: null }, contest: { id: contestId } }
-//     });
-//     console.log('gifts ->', gifts);
-//     return gifts;
-// }
-
-// Helper function to allocate gift when maxGifts is specified
-async function allocateGiftWithMaxGifts(contestInfo, customerInfo) {
+// Helper function to allocate gift with probability with maxGifts
+async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
+    // 1. Check if maxGifts limit is reached
     const allocatedGiftsCount = await strapi.db.query('api::contest-enrollment.contest-enrollment').count({
         where: { contests: contestInfo.id, publishedAt: { $ne: null } },
     });
@@ -298,28 +144,53 @@ async function allocateGiftWithMaxGifts(contestInfo, customerInfo) {
         throw new Error('All gift(s) has been allocated!!');
     }
 
-    const arrayOfGiftIds = contestInfo.gifts.map(gift => gift.id);
-    console.log('arrayOfGiftIds before shuffle ->', arrayOfGiftIds);
+    // Get gifts with their current data including remainingQuantity
+    const availableGifts = await strapi.db.query('api::gift.gift').findMany({
+        where: {
+            contest: { id: contestInfo.id },
+            // remainingQuantity: { $gt: 0 },
+            publishedAt: { $ne: null }
+        },
+        select: ['id', 'probability', 'remainingQuantity', 'totalQuantity']
+    });
 
-    const shuffledArrayOfGiftIds = shuffle(arrayOfGiftIds);
-    console.log('shuffledArrayOfGiftIds after shuffle ->', shuffledArrayOfGiftIds);
+    if (availableGifts.length === 0)
+        throw new Error('No gifts available for allocation!');
 
-    const randomIndex = Math.floor(Math.random() * shuffledArrayOfGiftIds.length);
-    console.log('randomIndex ->', shuffledArrayOfGiftIds[randomIndex]);
+    // 2. Set default probability if not available
+    const giftsWithProbability = availableGifts.map(gift => ({
+        ...gift,
+        probability: gift?.probability || 1
+    }));
 
+    console.log('giftsWithProbability ->', giftsWithProbability);
+
+    // 3. Allocate gift based on inverse probability (lower probability = higher chance)
+    const selectedGift = selectGiftByProbability(giftsWithProbability);
+    console.log('selectedGift ->', selectedGift);
+
+    // Create contest enrollment
     await strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
         data: {
             contests: { id: contestInfo.id },
             customers: { id: customerInfo.id },
-            gift: { id: shuffledArrayOfGiftIds[randomIndex] },
+            gift: { id: selectedGift.id },
             giftAllocatedAt: new Date(),
             enrollmentDate: new Date(),
             publishedAt: new Date()
         },
     });
 
+    // // Update remaining quantity for the selected gift
+    // await strapi.entityService.update('api::gift.gift', selectedGift.id, {
+    //     data: {
+    //         remainingQuantity: selectedGift.remainingQuantity - 1
+    //     }
+    // });
+
+    // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
-        where: { id: shuffledArrayOfGiftIds[randomIndex] },
+        where: { id: selectedGift.id },
         select: ['documentId'],
         populate: {
             product: {
@@ -332,6 +203,7 @@ async function allocateGiftWithMaxGifts(contestInfo, customerInfo) {
             }
         }
     });
+
     console.log('giftWithMedia ->', giftWithMedia);
     delete giftWithMedia.id;
     delete giftWithMedia.product.id;
@@ -339,53 +211,55 @@ async function allocateGiftWithMaxGifts(contestInfo, customerInfo) {
     return giftWithMedia;
 }
 
-// Helper function to allocate gift based on probability or random selection based on totalQty and remainingQty
-async function allocateGiftWithProbability(contestInfo, customerInfo) {
-    const availableGifts = contestInfo.gifts.filter(gift => gift.remainingQuantity > 0 || gift.probability > 0);
-    if (!availableGifts.length)
-        throw new Error('No gifts with remaining quantity or probability available!!');
+function selectGiftByProbability(gifts) {
+    // Calculate inverse weights (100 - probability) so lower probability gets higher weight
+    const weightsMap = gifts.map(gift => ({
+        gift,
+        weight: Math.max(1, 101 - gift.probability) // Ensure minimum weight of 1
+    }));
 
-    const giftsWithCalculatedProbability = availableGifts.map(gift => {
-        if (gift.probability > 0) {
-            return gift; // Keep original probability
-        } else if (gift.totalQuantity > 0 && gift.remainingQuantity > 0) {
-            // Calculate probability based on remaining quantity ratio
-            const calculatedProbability = Math.round((gift.remainingQuantity / gift.totalQuantity) * 100);
-            return {
-                ...gift,
-                probability: calculatedProbability
-            };
-        } else {
-            // If no probability and no valid quantities, assign a default low probability
-            return {
-                ...gift,
-                probability: 1
-            };
+    console.log('weightsMap ->', weightsMap);
+
+    // Calculate total weight
+    const totalWeight = weightsMap.reduce((sum, item) => sum + item.weight, 0);
+
+    // Generate random number between 0 and totalWeight
+    const randomValue = Math.random() * totalWeight;
+    console.log('randomValue ->', randomValue, 'totalWeight ->', totalWeight);
+
+    // Select gift based on weighted random selection
+    let currentWeight = 0;
+    for (const item of weightsMap) {
+        currentWeight += item.weight;
+        if (randomValue <= currentWeight) {
+            return item.gift;
         }
-    });
-
-    // Check if all gifts have probability values
-    const allHaveProbability = giftsWithCalculatedProbability.every(gift => gift.probability > 0);
-
-    let selectedGift;
-    if (allHaveProbability) {
-        // Calculate total probability
-        const totalProbability = availableGifts.reduce((sum, gift) => sum + (gift?.probability || 0), 0);
-
-        // Weighted random selection
-        let randomValue = Math.random() * totalProbability;
-        selectedGift = availableGifts.find(gift => {
-            if (randomValue < (gift.probability || 0)) return true;
-            randomValue -= gift.probability || 0;
-            return false;
-        }) || availableGifts[Math.floor(Math.random() * availableGifts.length)];
-    } else {
-        // Random selection if any gift lacks probability
-        const randomIndex = Math.floor(Math.random() * availableGifts.length);
-        selectedGift = availableGifts[randomIndex];
     }
 
+    // Fallback (should never reach here)
+    return weightsMap[weightsMap.length - 1].gift;
+}
+
+// Helper function to allocate gift based on random selection based on totalQty and remainingQty
+async function allocateGiftsWithRemaining(contestInfo, customerInfo) {
+    // 1. Filter gifts with remainingQuantity > 0
+    const availableGifts = contestInfo.gifts.filter(gift => gift.remainingQuantity > 0);
+
+    if (!availableGifts.length) {
+        throw new Error('No gifts with remaining quantity available!!');
+    }
+
+    console.log('Available gifts with remaining quantity:', availableGifts);
+
+    // 2. Make a random choice for picking up the gift
+    const randomIndex = Math.floor(Math.random() * availableGifts.length);
+    const selectedGift = availableGifts[randomIndex];
+
+    console.log('Selected gift:', selectedGift);
+
+    // Create contest enrollment and update remaining quantity in parallel
     const promiseArr = [
+        // Create contest enrollment
         strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
             data: {
                 contests: { id: contestInfo.id },
@@ -395,27 +269,26 @@ async function allocateGiftWithProbability(contestInfo, customerInfo) {
                 enrollmentDate: new Date(),
                 publishedAt: new Date()
             },
+        }),
+
+        // 3. Subtract 1 from remainingQuantity
+        strapi.entityService.update('api::gift.gift', selectedGift.id, {
+            data: {
+                remainingQuantity: (Number(selectedGift.remainingQuantity) - 1).toString(),
+            },
         })
     ];
 
-    // Update remaining quantity if gift has totalQuantity and remainingQuantity
-    if (selectedGift.totalQuantity !== undefined && selectedGift.remainingQuantity !== undefined) {
-        promiseArr.push(
-            strapi.entityService.update('api::gift.gift', selectedGift.id, {
-                data: {
-                    remainingQuantity: (Number(selectedGift.remainingQuantity) - 1).toString(),
-                },
-            })
-        );
-    }
-
     await Promise.all(promiseArr);
 
+    // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
         where: { id: selectedGift.id },
         select: ['documentId', 'title', 'description', 'worth'],
         populate: { image: { select: ['url', 'name'] } }
     });
+
+    console.log('Gift allocated with media:', giftWithMedia);
 
     return giftWithMedia;
 }

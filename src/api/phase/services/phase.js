@@ -17,10 +17,19 @@ module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
         const currentPhase = await strapi.db.query('api::phase.phase').findOne({
             where: {
                 contest: contestId,
-                startDate: { $lte: today },
                 endDate: { $gte: today }
             },
-            populate: ['prizes']
+            populate: {
+                prizes: {
+                    fields: ['totalQuantity', 'remainingQuantity', 'probability'],
+                    populate: {
+                        product: {
+                            fields: ['title', 'description', 'worth'],
+                            populate: { image: { fields: ['url', 'name'] } }
+                        }
+                    }
+                }
+            }
         });
 
         return currentPhase;
