@@ -524,6 +524,13 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    allocatedQuantity: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetMinMax<
+        {
+          min: '0';
+        },
+        string
+      >;
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
@@ -536,7 +543,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
     probability: Schema.Attribute.BigInteger &
-      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
           max: '100';
@@ -546,13 +552,6 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
       >;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
-    remainingQuantity: Schema.Attribute.BigInteger &
-      Schema.Attribute.SetMinMax<
-        {
-          min: '0';
-        },
-        string
-      >;
     totalQuantity: Schema.Attribute.BigInteger &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -638,6 +637,13 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    allocatedQuantity: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetMinMax<
+        {
+          min: '0';
+        },
+        string
+      >;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
       'api::contest-enrollment.contest-enrollment'
@@ -651,10 +657,16 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     minEnrollment: Schema.Attribute.BigInteger &
       Schema.Attribute.DefaultTo<'0'>;
     phase: Schema.Attribute.Relation<'manyToOne', 'api::phase.phase'>;
-    probability: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    probability: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
-    remainingQuantity: Schema.Attribute.BigInteger;
     totalQuantity: Schema.Attribute.BigInteger;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

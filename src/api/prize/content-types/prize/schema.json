@@ -14,12 +14,14 @@
     "totalQuantity": {
       "type": "biginteger"
     },
-    "remainingQuantity": {
-      "type": "biginteger"
+    "allocatedQuantity": {
+      "type": "biginteger",
+      "min": "0"
     },
     "probability": {
       "type": "integer",
-      "default": 1
+      "min": 0,
+      "max": 100
     },
     "product": {
       "type": "relation",

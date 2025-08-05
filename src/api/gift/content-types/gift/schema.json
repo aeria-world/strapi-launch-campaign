@@ -16,14 +16,14 @@
       "required": true,
       "min": "1"
     },
-    "remainingQuantity": {
+    "allocatedQuantity": {
       "type": "biginteger",
       "required": false,
       "min": "0"
     },
     "probability": {
       "type": "biginteger",
-      "required": true,
+      "required": false,
       "unique": false,
       "min": "0",
       "max": "100"

@@ -45,7 +45,7 @@ module.exports = {
 
         return (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
             ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo)
-            : await allocateGiftsWithRemaining(contestInfo, customerInfo);
+            : await allocatedGiftsWithQuantity(contestInfo, customerInfo);
     }
 };
 
@@ -144,14 +144,13 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
         throw new Error('All gift(s) has been allocated!!');
     }
 
-    // Get gifts with their current data including remainingQuantity
+    // Get gifts with their current data including allocatedQuantity
     const availableGifts = await strapi.db.query('api::gift.gift').findMany({
         where: {
             contest: { id: contestInfo.id },
-            // remainingQuantity: { $gt: 0 },
             publishedAt: { $ne: null }
         },
-        select: ['id', 'probability', 'remainingQuantity', 'totalQuantity']
+        select: ['id', 'probability', 'allocatedQuantity', 'totalQuantity']
     });
 
     if (availableGifts.length === 0)
@@ -181,12 +180,12 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
         },
     });
 
-    // // Update remaining quantity for the selected gift
-    // await strapi.entityService.update('api::gift.gift', selectedGift.id, {
-    //     data: {
-    //         remainingQuantity: selectedGift.remainingQuantity - 1
-    //     }
-    // });
+    // Update allocated quantity for the selected gift
+    await strapi.entityService.update('api::gift.gift', selectedGift.id, {
+        data: {
+            allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
+        }
+    });
 
     // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
@@ -240,14 +239,13 @@ function selectGiftByProbability(gifts) {
     return weightsMap[weightsMap.length - 1].gift;
 }
 
-// Helper function to allocate gift based on random selection based on totalQty and remainingQty
-async function allocateGiftsWithRemaining(contestInfo, customerInfo) {
-    // 1. Filter gifts with remainingQuantity > 0
-    const availableGifts = contestInfo.gifts.filter(gift => gift.remainingQuantity > 0);
+// Helper function to allocate gift based on random selection based on totalQty and allocatedQty
+async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
+    // 1. Filter gifts with totalQuantity > 0
+    const availableGifts = contestInfo.gifts.filter(gift => gift.totalQuantity > 0);
 
-    if (!availableGifts.length) {
-        throw new Error('No gifts with remaining quantity available!!');
-    }
+    if (!availableGifts.length)
+        throw new Error('No gifts available!!');
 
     console.log('Available gifts with remaining quantity:', availableGifts);
 
@@ -257,7 +255,7 @@ async function allocateGiftsWithRemaining(contestInfo, customerInfo) {
 
     console.log('Selected gift:', selectedGift);
 
-    // Create contest enrollment and update remaining quantity in parallel
+    // Create contest enrollment and update allocated quantity in parallel
     const promiseArr = [
         // Create contest enrollment
         strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
@@ -271,10 +269,10 @@ async function allocateGiftsWithRemaining(contestInfo, customerInfo) {
             },
         }),
 
-        // 3. Subtract 1 from remainingQuantity
+        // 3. Subtract 1 from allocatedQuantity
         strapi.entityService.update('api::gift.gift', selectedGift.id, {
             data: {
-                remainingQuantity: (Number(selectedGift.remainingQuantity) - 1).toString(),
+                allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
             },
         })
     ];
