@@ -21,16 +21,5 @@ module.exports = {
       ctx.status = 500;
       ctx.body = { error: err.message || err.toString() };
     }
-  },
-  // fetchAllGifts: async (ctx, next) => {
-  //   try {
-  //     const { contestName } = ctx.query;
-  //     const gifts = await strapi.service('api::giftallocation.giftallocation').fetchAllGifts(contestName);
-  //     ctx.body = gifts;
-  //   } catch (error) {
-  //     console.log('error in fetchAllGifts -> ', error)
-  //     ctx.status = 400;
-  //     ctx.body = { error: error.message || error.toString() };
-  //   }
-  // }
+  }
 };
