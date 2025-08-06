@@ -411,7 +411,7 @@ export interface ApiContestEnrollmentContestEnrollment
     singularName: 'contest-enrollment';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     contests: Schema.Attribute.Relation<'oneToMany', 'api::contest.contest'>;
@@ -447,7 +447,7 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     singularName: 'contest';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     contest_enrollment: Schema.Attribute.Relation<
@@ -483,7 +483,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     singularName: 'customer';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     contest_enrollment: Schema.Attribute.Relation<
@@ -521,7 +521,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     singularName: 'gift';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     allocatedQuantity: Schema.Attribute.BigInteger &
@@ -542,14 +542,15 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'> &
       Schema.Attribute.Private;
-    probability: Schema.Attribute.BigInteger &
+    probability: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
-          max: '100';
-          min: '0';
+          max: 100;
+          min: 0;
         },
-        string
-      >;
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     totalQuantity: Schema.Attribute.BigInteger &
@@ -606,7 +607,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     singularName: 'phase';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
@@ -634,7 +635,7 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
     singularName: 'prize';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     allocatedQuantity: Schema.Attribute.BigInteger &
@@ -664,7 +665,8 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
           min: 0;
         },
         number
-      >;
+      > &
+      Schema.Attribute.DefaultTo<0>;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     totalQuantity: Schema.Attribute.BigInteger;
@@ -682,7 +684,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     singularName: 'product';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     allocated: Schema.Attribute.BigInteger;

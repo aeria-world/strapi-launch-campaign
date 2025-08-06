@@ -7,7 +7,7 @@
     "displayName": "Gift"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
@@ -22,11 +22,10 @@
       "min": "0"
     },
     "probability": {
-      "type": "biginteger",
-      "required": false,
-      "unique": false,
-      "min": "0",
-      "max": "100"
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 100
     },
     "contest_enrollments": {
       "type": "relation",

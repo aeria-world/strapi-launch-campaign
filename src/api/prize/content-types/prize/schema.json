@@ -7,7 +7,7 @@
     "displayName": "Prize"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
@@ -20,6 +20,7 @@
     },
     "probability": {
       "type": "integer",
+      "default": 0,
       "min": 0,
       "max": 100
     },
