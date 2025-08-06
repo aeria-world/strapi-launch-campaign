@@ -21,7 +21,7 @@ module.exports = createCoreController('api::prize.prize', ({ strapi }) => ({
                 status: 'ok',
                 data: {
                     message: 'Prize allocated successfully',
-                    // prizes
+                    prizeData
                 }
             });
         } catch (error) {

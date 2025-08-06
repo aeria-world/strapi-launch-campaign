@@ -36,8 +36,8 @@ module.exports = {
         // checking whether the user already win in the provided contest
         const existingGift = await checkExistingGift(contestId, userInfo);
         console.log('existingGift -> -> ', existingGift);
-        if (existingGift) {
-            return existingGift.gift && Object.keys(existingGift.gift).length ? existingGift.gift : existingGift;
+        if (existingGift && Object.keys(existingGift).length) {
+            return existingGift;
         }
 
         const customerInfo = await getOrCreateCustomer(userInfo);
@@ -58,12 +58,31 @@ async function checkExistingGift(contestId, userInfo) {
                 publishedAt: { $ne: null },
                 giftAllocatedAt: { $ne: null }
             },
+            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate'],
             populate: {
                 gift: {
+                    select: ['documentId'],
                     populate: {
                         product: {
-                            fields: ['title', 'description', 'worth'],
-                            populate: { image: { fields: ['url', 'name'] } }
+                            select: ['documentId', 'title', 'description', 'worth'],
+                            populate: {
+                                image: {
+                                    select: ['url', 'name']
+                                }
+                            }
+                        }
+                    }
+                },
+                prize: {
+                    select: ['documentId'],
+                    populate: {
+                        product: {
+                            select: ['documentId', 'title', 'description', 'worth'],
+                            populate: {
+                                image: {
+                                    select: ['url', 'name']
+                                }
+                            }
                         }
                     }
                 }
@@ -76,12 +95,31 @@ async function checkExistingGift(contestId, userInfo) {
                 publishedAt: { $ne: null },
                 giftAllocatedAt: { $ne: null }
             },
+            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate'],
             populate: {
                 gift: {
+                    select: ['documentId', 'probability'],
                     populate: {
                         product: {
-                            fields: ['title', 'description', 'worth'],
-                            populate: { image: { fields: ['url', 'name'] } }
+                            select: ['documentId', 'title', 'description', 'worth'],
+                            populate: {
+                                image: {
+                                    select: ['url', 'name']
+                                }
+                            }
+                        }
+                    }
+                },
+                prize: {
+                    select: ['documentId', 'probability'],
+                    populate: {
+                        product: {
+                            select: ['documentId', 'title', 'description', 'worth'],
+                            populate: {
+                                image: {
+                                    select: ['url', 'name']
+                                }
+                            }
                         }
                     }
                 }
@@ -181,7 +219,8 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
     });
 
     // Update allocated quantity for the selected gift
-    await strapi.entityService.update('api::gift.gift', selectedGift.id, {
+    await strapi.db.query('api::gift.gift').update({
+        where: { documentId: selectedGift.documentId },
         data: {
             allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
         }
@@ -270,10 +309,11 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
         }),
 
         // 3. Subtract 1 from allocatedQuantity
-        strapi.entityService.update('api::gift.gift', selectedGift.id, {
+        strapi.db.query('api::gift.gift').update({
+            where: { documentId: selectedGift.documentId },
             data: {
                 allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
-            },
+            }
         })
     ];
 
