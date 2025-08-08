@@ -33,19 +33,35 @@ module.exports = {
         if (!gifts || gifts.length === 0)
             throw new Error('No gifts available in this contest!!');
 
+        const customerInfo = await getOrCreateCustomer(userInfo);
+        console.log('customerInfo -> ', customerInfo);
+
         // checking whether the user already win in the provided contest
         const existingGift = await checkExistingGift(contestId, userInfo);
         console.log('existingGift -> -> ', existingGift);
         if (existingGift && Object.keys(existingGift).length) {
-            return existingGift;
+            return {
+                ...existingGift,
+                customerInfo: {
+                    upin: customerInfo?.upin || '',
+                    userId: customerInfo?.userId || '',
+                    name: customerInfo?.name || '',
+                }
+            };
         }
 
-        const customerInfo = await getOrCreateCustomer(userInfo);
-        console.log('customerInfo -> ', customerInfo);
-
-        return (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
+        const response = (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
             ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo)
             : await allocatedGiftsWithQuantity(contestInfo, customerInfo);
+
+        return {
+            ...response,
+            customerInfo: {
+                upin: customerInfo?.upin || '',
+                userId: customerInfo?.userId || '',
+                name: customerInfo?.name || '',
+            }
+        }
     }
 };
 
