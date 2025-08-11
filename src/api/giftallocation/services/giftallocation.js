@@ -338,11 +338,22 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
     // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
         where: { id: selectedGift.id },
-        select: ['documentId', 'title', 'description', 'worth'],
-        populate: { image: { select: ['url', 'name'] } }
+        select: ['documentId'],
+        populate: {
+            product: {
+                select: ['documentId', 'title', 'description', 'worth'],
+                populate: {
+                    image: {
+                        select: ['url', 'name']
+                    }
+                }
+            }
+        }
     });
 
     console.log('Gift allocated with media:', giftWithMedia);
+    delete giftWithMedia.id;
+    delete giftWithMedia.product.id;
 
     return giftWithMedia;
 }
