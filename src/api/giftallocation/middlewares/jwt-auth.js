@@ -16,34 +16,12 @@ module.exports = (config, { strapi }) => {
             const header = jwt.decode(token, { complete: true })?.header;
             console.log('Token algorithm:', header?.alg);
 
-            // Debug environment variable
-            console.log('JWT_PUBLIC_KEY exists:', !!process.env.JWT_PUBLIC_KEY);
-            console.log('JWT_PUBLIC_KEY type:', typeof process.env.JWT_PUBLIC_KEY);
-            console.log('JWT_PUBLIC_KEY length:', process.env.JWT_PUBLIC_KEY?.length);
-            console.log('JWT_PUBLIC_KEY first 50 chars:', process.env.JWT_PUBLIC_KEY?.substring(0, 50));
-            console.log('JWT_PUBLIC_KEY includes BEGIN:', process.env.JWT_PUBLIC_KEY?.includes('-----BEGIN'));
-            console.log('JWT_PUBLIC_KEY includes END:', process.env.JWT_PUBLIC_KEY?.includes('-----END'));
-
             let decoded;
-            let publicKey = process.env.JWT_PUBLIC_KEY;
 
             // Handle different algorithms
             if (header?.alg === 'RS256' || header?.alg === 'RS512') {
-                if (!publicKey) {
-                    console.error('JWT_PUBLIC_KEY is not set');
-                    return ctx.unauthorized('Server configuration error');
-                }
-
-                // Handle escaped newlines in environment variable
-                publicKey = publicKey.replace(/\\n/g, '\n');
-
-                console.log('Processed public key first 50 chars:', publicKey.substring(0, 50));
-                console.log('Processed public key includes proper headers:',
-                    publicKey.includes('-----BEGIN PUBLIC KEY-----') &&
-                    publicKey.includes('-----END PUBLIC KEY-----'));
-
                 // Asymmetric algorithm - use public key
-                decoded = jwt.verify(token, publicKey, {
+                decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY, {
                     algorithms: [header.alg]
                 });
             } else if (header?.alg === 'HS256' || header?.alg === 'HS512') {
@@ -70,9 +48,6 @@ module.exports = (config, { strapi }) => {
             if (error.name === 'JsonWebTokenError') {
                 if (error.message.includes('invalid algorithm')) {
                     return ctx.unauthorized('Token algorithm not supported');
-                }
-                if (error.message.includes('asymmetric key')) {
-                    return ctx.unauthorized('Invalid public key format');
                 }
                 return ctx.unauthorized('Invalid token format');
             } else if (error.name === 'TokenExpiredError') {
