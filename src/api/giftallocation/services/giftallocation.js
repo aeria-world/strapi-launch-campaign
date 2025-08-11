@@ -36,6 +36,37 @@ module.exports = {
         const customerInfo = await getOrCreateCustomer(userInfo);
         console.log('customerInfo -> ', customerInfo);
 
+        const currentPhase = await strapi.service('api::phase.phase').findRunningPhase(contestInfo.id);
+        console.log('currentPhase -> ', currentPhase);
+
+        let prizeInfo = null;
+        if (currentPhase?.prizes?.length) {
+            const prizes = currentPhase.prizes.filter(Boolean);
+            const maxProbability = Math.max(
+                ...prizes.map(p => Number(p?.probability || 0))
+            );
+            prizeInfo = prizes.find(p => Number(p?.probability || 0) === maxProbability) || null;
+            console.log('Max probability prize -> ', prizeInfo);
+        }
+
+        let phaseInfo = {
+            endDate: currentPhase?.endDate || '',
+            prizeInfo: {
+                documentId: prizeInfo?.documentId || '',
+                product: {
+                    documentId: prizeInfo?.product?.documentId || '',
+                    title: prizeInfo?.product?.title || '',
+                    description: prizeInfo?.product?.description || '',
+                    worth: prizeInfo?.product?.worth || '',
+                    image: prizeInfo?.product?.image?.length ? prizeInfo.product?.image.map(img => ({
+                        documentId: img?.documentId || '',
+                        name: img?.name || '',
+                        url: img?.url || '',
+                    })) : []
+                }
+            }
+        };
+
         // checking whether the user already win in the provided contest
         const existingGift = await checkExistingGift(contestId, userInfo);
         console.log('existingGift -> -> ', existingGift);
@@ -46,7 +77,8 @@ module.exports = {
                     upin: customerInfo?.upin || '',
                     userId: customerInfo?.userId || '',
                     name: customerInfo?.name || '',
-                }
+                },
+                phase: phaseInfo
             };
         }
 
@@ -60,7 +92,8 @@ module.exports = {
                 upin: customerInfo?.upin || '',
                 userId: customerInfo?.userId || '',
                 name: customerInfo?.name || '',
-            }
+            },
+            phase: phaseInfo
         }
     }
 };
