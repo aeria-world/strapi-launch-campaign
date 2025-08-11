@@ -20,11 +20,10 @@ module.exports = (config, { strapi }) => {
 
             // Handle different algorithms
             if (header?.alg === 'RS256') {
-                console.log('process.env.JWT_PUBLIC_KEY -> -> ', process.env.JWT_PUBLIC_KEY);
+                const publicKey = process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n');
+                console.log('publicKey -> -> ', publicKey);
                 // Asymmetric algorithm - use public key
-                decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY, {
-                    algorithms: [header.alg]
-                });
+                decoded = jwt.verify(token, publicKey, { algorithms: [header.alg] });
             } else {
                 return ctx.unauthorized('Unsupported token algorithm');
             }
