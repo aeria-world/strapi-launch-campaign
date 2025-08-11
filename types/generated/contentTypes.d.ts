@@ -414,7 +414,7 @@ export interface ApiContestEnrollmentContestEnrollment
     draftAndPublish: false;
   };
   attributes: {
-    contests: Schema.Attribute.Relation<'oneToMany', 'api::contest.contest'>;
+    contests: Schema.Attribute.Relation<'manyToMany', 'api::contest.contest'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -450,8 +450,8 @@ export interface ApiContestContest extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    contest_enrollment: Schema.Attribute.Relation<
-      'manyToOne',
+    contest_enrollments: Schema.Attribute.Relation<
+      'manyToMany',
       'api::contest-enrollment.contest-enrollment'
     >;
     createdAt: Schema.Attribute.DateTime;

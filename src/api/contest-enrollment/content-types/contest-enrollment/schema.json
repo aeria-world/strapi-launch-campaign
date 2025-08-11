@@ -13,9 +13,9 @@
   "attributes": {
     "contests": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::contest.contest",
-      "mappedBy": "contest_enrollment"
+      "mappedBy": "contest_enrollments"
     },
     "customers": {
       "type": "relation",

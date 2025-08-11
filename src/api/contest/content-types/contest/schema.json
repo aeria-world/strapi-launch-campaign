@@ -20,9 +20,9 @@
       "required": false,
       "default": true
     },
-    "contest_enrollment": {
+    "contest_enrollments": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::contest-enrollment.contest-enrollment",
       "inversedBy": "contests"
     },
