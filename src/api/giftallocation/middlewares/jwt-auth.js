@@ -19,14 +19,10 @@ module.exports = (config, { strapi }) => {
             let decoded;
 
             // Handle different algorithms
-            if (header?.alg === 'RS256' || header?.alg === 'RS512') {
+            if (header?.alg === 'RS256') {
+                console.log('process.env.JWT_PUBLIC_KEY -> -> ', process.env.JWT_PUBLIC_KEY);
                 // Asymmetric algorithm - use public key
                 decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY, {
-                    algorithms: [header.alg]
-                });
-            } else if (header?.alg === 'HS256' || header?.alg === 'HS512') {
-                // Symmetric algorithm - use secret
-                decoded = jwt.verify(token, process.env.JWT_SECRET, {
                     algorithms: [header.alg]
                 });
             } else {
