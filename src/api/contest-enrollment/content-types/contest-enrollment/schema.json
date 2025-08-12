@@ -50,6 +50,10 @@
     },
     "prizeClaimedAt": {
       "type": "datetime"
+    },
+    "redemptionCode": {
+      "type": "text",
+      "required": true
     }
   }
 }

@@ -75,8 +75,9 @@ module.exports = {
                 ...existingGift,
                 customerInfo: {
                     upin: customerInfo?.upin || '',
-                    userId: customerInfo?.userId || '',
+                    deviceId: customerInfo?.deviceId || '',
                     name: customerInfo?.name || '',
+                    companyName: customerInfo?.companyName || ''
                 },
                 phase: phaseInfo
             };
@@ -90,8 +91,9 @@ module.exports = {
             ...response,
             customerInfo: {
                 upin: customerInfo?.upin || '',
-                userId: customerInfo?.userId || '',
+                deviceId: customerInfo?.deviceId || '',
                 name: customerInfo?.name || '',
+                companyName: customerInfo?.companyName || ''
             },
             phase: phaseInfo
         }
@@ -107,7 +109,7 @@ async function checkExistingGift(contestId, userInfo) {
                 publishedAt: { $ne: null },
                 giftAllocatedAt: { $ne: null }
             },
-            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate'],
+            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate', 'redemptionCode'],
             populate: {
                 gift: {
                     select: ['documentId'],
@@ -144,7 +146,7 @@ async function checkExistingGift(contestId, userInfo) {
                 publishedAt: { $ne: null },
                 giftAllocatedAt: { $ne: null }
             },
-            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate'],
+            select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate', 'redemptionCode'],
             populate: {
                 gift: {
                     select: ['documentId', 'probability'],
@@ -209,6 +211,7 @@ async function getOrCreateCustomer(userInfo) {
                 upin: userInfo.userId,
                 deviceId: userInfo.deviceId,
                 name: userInfo?.name || '',
+                companyName: userInfo?.companyName || '',
                 publishedAt: new Date(),
                 createdBy: { id: 1 },
                 updatedBy: { id: 1 }
@@ -255,25 +258,33 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
     const selectedGift = selectGiftByProbability(giftsWithProbability);
     console.log('selectedGift ->', selectedGift);
 
-    // Create contest enrollment
-    await strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
-        data: {
-            contests: { id: contestInfo.id },
-            customers: { id: customerInfo.id },
-            gift: { id: selectedGift.id },
-            giftAllocatedAt: new Date(),
-            enrollmentDate: new Date(),
-            publishedAt: new Date()
-        },
-    });
+    // Generate unique redemption code
+    const uniqueRedemptionCode = await generateUniqueAlphaNumericCode();
 
-    // Update allocated quantity for the selected gift
-    await strapi.db.query('api::gift.gift').update({
-        where: { documentId: selectedGift.documentId },
-        data: {
-            allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
-        }
-    });
+    const promiseArr = [
+        // Create contest enrollment
+        strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
+            data: {
+                contests: { id: contestInfo.id },
+                customers: { id: customerInfo.id },
+                gift: { id: selectedGift.id },
+                giftAllocatedAt: new Date(),
+                redemptionCode: uniqueRedemptionCode,
+                enrollmentDate: new Date(),
+                publishedAt: new Date()
+            },
+        }),
+
+        // Update allocated quantity for the selected gift
+        strapi.db.query('api::gift.gift').updateMany({
+            where: { id: selectedGift.id },
+            data: {
+                allocatedQuantity: (Number(selectedGift?.allocatedQuantity || 0) + 1).toString()
+            }
+        })
+    ]
+
+    await Promise.all(promiseArr);
 
     // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
@@ -295,7 +306,10 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
     delete giftWithMedia.id;
     delete giftWithMedia.product.id;
 
-    return giftWithMedia;
+    return {
+        ...giftWithMedia,
+        redemptionCode: uniqueRedemptionCode
+    };
 }
 
 function selectGiftByProbability(gifts) {
@@ -343,6 +357,9 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
 
     console.log('Selected gift:', selectedGift);
 
+    // Generate unique redemption code
+    const uniqueRedemptionCode = await generateUniqueAlphaNumericCode();
+
     // Create contest enrollment and update allocated quantity in parallel
     const promiseArr = [
         // Create contest enrollment
@@ -352,16 +369,17 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
                 customers: customerInfo.id,
                 gift: selectedGift.id,
                 giftAllocatedAt: new Date(),
+                redemptionCode: uniqueRedemptionCode,
                 enrollmentDate: new Date(),
                 publishedAt: new Date()
             },
         }),
 
         // 3. Subtract 1 from allocatedQuantity
-        strapi.db.query('api::gift.gift').update({
-            where: { documentId: selectedGift.documentId },
+        strapi.db.query('api::gift.gift').updateMany({
+            where: { id: selectedGift.id },
             data: {
-                allocatedQuantity: (Number(selectedGift.allocatedQuantity) + 1).toString()
+                allocatedQuantity: (Number(selectedGift?.allocatedQuantity || 0) + 1).toString()
             }
         })
     ];
@@ -388,5 +406,45 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
     delete giftWithMedia.id;
     delete giftWithMedia.product.id;
 
-    return giftWithMedia;
+    return {
+        ...giftWithMedia,
+        redemptionCode: uniqueRedemptionCode
+    };
+}
+
+async function generateUniqueAlphaNumericCode(maxAttempts = 10) {
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+        const code = generateAlphaNumericCode();
+
+        // Check if code already exists in the database
+        const existingEnrollment = await strapi.db.query('api::contest-enrollment.contest-enrollment').findOne({
+            where: { redemptionCode: code }
+        });
+
+        if (!existingEnrollment) {
+            console.log(`Unique redemption code generated: ${code} (attempts: ${attempts + 1})`);
+            return code;
+        }
+
+        attempts++;
+        console.log(`Redemption code ${code} already exists, retrying... (attempt ${attempts})`);
+    }
+
+    // If we couldn't generate a unique code after maxAttempts, throw an error
+    throw new Error(`Failed to generate unique redemption code after ${maxAttempts} attempts`);
+}
+
+function generateAlphaNumericCode() {
+    const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+
+    const allChars = upperCase + digits;
+
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += allChars.charAt(Math.floor(Math.random() * allChars.length));
+    }
+    return code;
 }

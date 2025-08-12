@@ -29,6 +29,9 @@
       "relation": "manyToOne",
       "target": "api::contest-enrollment.contest-enrollment",
       "inversedBy": "customers"
+    },
+    "companyName": {
+      "type": "text"
     }
   }
 }

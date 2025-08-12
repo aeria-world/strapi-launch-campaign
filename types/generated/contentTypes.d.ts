@@ -433,6 +433,7 @@ export interface ApiContestEnrollmentContestEnrollment
     prizeAllocatedAt: Schema.Attribute.DateTime;
     prizeClaimedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
+    redemptionCode: Schema.Attribute.Text & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -486,6 +487,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    companyName: Schema.Attribute.Text;
     contest_enrollment: Schema.Attribute.Relation<
       'manyToOne',
       'api::contest-enrollment.contest-enrollment'
