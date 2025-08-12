@@ -443,8 +443,16 @@ function generateAlphaNumericCode() {
     const allChars = upperCase + digits;
 
     let code = '';
-    for (let i = 0; i < 6; i++) {
+    code += upperCase.charAt(Math.floor(Math.random() * upperCase.length));
+    code += digits.charAt(Math.floor(Math.random() * digits.length));
+
+    // Fill remaining 4 chars randomly
+    for (let i = 0; i < 4; i++) {
         code += allChars.charAt(Math.floor(Math.random() * allChars.length));
     }
+
+    // Shuffle to avoid predictable placement
+    code = code.split('').sort(() => Math.random() - 0.5).join('');
+
     return code;
 }
