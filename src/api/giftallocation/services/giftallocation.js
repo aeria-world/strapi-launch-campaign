@@ -36,7 +36,7 @@ module.exports = {
         const customerInfo = await getOrCreateCustomer(userInfo);
         console.log('customerInfo -> ', customerInfo);
 
-        const currentPhase = await strapi.service('api::phase.phase').findRunningPhase(contestInfo.id);
+        const currentPhase = await strapi.service('api::phase.phase').findRunningPhase(contestInfo.id, customerInfo.createdAt);
         console.log('currentPhase -> ', currentPhase);
 
         let prizeInfo = null;
@@ -51,8 +51,11 @@ module.exports = {
 
         let phaseInfo = {
             endDate: currentPhase?.endDate || '',
+            isResultDeclared: currentPhase?.isResultDeclared || false,
+            documentId: currentPhase?.documentId || '',
             prizeInfo: {
                 documentId: prizeInfo?.documentId || '',
+                congratulationHeading: prizeInfo?.congratulationHeading || '',
                 product: {
                     documentId: prizeInfo?.product?.documentId || '',
                     title: prizeInfo?.product?.title || '',
@@ -112,7 +115,7 @@ async function checkExistingGift(contestId, userInfo) {
             select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate', 'redemptionCode'],
             populate: {
                 gift: {
-                    select: ['documentId'],
+                    select: ['documentId', 'congratulationHeading'],
                     populate: {
                         product: {
                             select: ['documentId', 'title', 'description', 'worth'],
@@ -149,7 +152,7 @@ async function checkExistingGift(contestId, userInfo) {
             select: ['documentId', 'giftAllocatedAt', 'prizeAllocatedAt', 'enrollmentDate', 'redemptionCode'],
             populate: {
                 gift: {
-                    select: ['documentId', 'probability'],
+                    select: ['documentId', 'probability', 'congratulationHeading'],
                     populate: {
                         product: {
                             select: ['documentId', 'title', 'description', 'worth'],
@@ -240,7 +243,7 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
             contest: { id: contestInfo.id },
             publishedAt: { $ne: null }
         },
-        select: ['id', 'probability', 'allocatedQuantity', 'totalQuantity']
+        select: ['id', 'probability', 'allocatedQuantity', 'totalQuantity', 'congratulationHeading']
     });
 
     if (availableGifts.length === 0)
@@ -289,7 +292,7 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
     // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
         where: { id: selectedGift.id },
-        select: ['documentId'],
+        select: ['documentId', 'congratulationHeading'],
         populate: {
             product: {
                 select: ['documentId', 'title', 'description', 'worth'],
@@ -389,7 +392,7 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
     // Fetch gift details with media for return
     const giftWithMedia = await strapi.db.query('api::gift.gift').findOne({
         where: { id: selectedGift.id },
-        select: ['documentId'],
+        select: ['documentId', 'congratulationHeading'],
         populate: {
             product: {
                 select: ['documentId', 'title', 'description', 'worth'],

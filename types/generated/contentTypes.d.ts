@@ -533,6 +533,8 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
         },
         string
       >;
+    congratulationHeading: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Congratulations'>;
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
       'oneToMany',
@@ -612,11 +614,14 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    bannerImage: Schema.Attribute.Media<'images', true>;
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     endDate: Schema.Attribute.Date;
+    isResultDeclared: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
       Schema.Attribute.Private;

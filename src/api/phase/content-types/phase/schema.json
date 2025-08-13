@@ -29,6 +29,17 @@
       "relation": "oneToMany",
       "target": "api::prize.prize",
       "mappedBy": "phase"
+    },
+    "isResultDeclared": {
+      "type": "boolean",
+      "default": false
+    },
+    "bannerImage": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }

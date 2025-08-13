@@ -44,6 +44,11 @@
       "relation": "manyToOne",
       "target": "api::contest.contest",
       "inversedBy": "gifts"
+    },
+    "congratulationHeading": {
+      "type": "text",
+      "default": "Congratulations",
+      "required": false
     }
   }
 }

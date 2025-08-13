@@ -8,16 +8,23 @@
 const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
-    findRunningPhase: async (contestId) => {
+    findRunningPhase: async (contestId, customerJoiningDate = '') => {
         if (!contestId)
             throw new Error('contestId is required!!');
 
-        const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+        let phaseEndDate = ''
+        if (customerJoiningDate) {
+            phaseEndDate = new Date(customerJoiningDate).toISOString().split('T')[0];
+        } else {
+            phaseEndDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format as DEFAULT
+        }
+        console.log('phaseEndDate -> -> -> ', phaseEndDate);
 
         const currentPhase = await strapi.db.query('api::phase.phase').findOne({
             where: {
                 contest: contestId,
-                endDate: { $gte: today }
+                isResultDeclared: false,
+                endDate: { $gte: phaseEndDate }
             },
             populate: {
                 prizes: {
