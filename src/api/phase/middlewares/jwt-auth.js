@@ -14,21 +14,21 @@ module.exports = (config, { strapi }) => {
 
             // Debug: Check token algorithm
             const header = jwt.decode(token, { complete: true })?.header;
-            console.log('Token algorithm:', header?.alg);
+            // console.log('Token algorithm:', header?.alg);
 
             let decoded;
 
             // Handle different algorithms
             if (header?.alg === 'RS256') {
                 const publicKey = process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n');
-                console.log('publicKey -> -> ', publicKey);
+                // console.log('publicKey -> -> ', publicKey);
                 // Asymmetric algorithm - use public key
                 decoded = jwt.verify(token, publicKey, { algorithms: [header.alg] });
             } else {
                 return ctx.unauthorized('Unsupported token algorithm');
             }
 
-            console.log('decoded -> -> ', decoded);
+            // console.log('decoded -> -> ', decoded);
 
             if (!decoded?.userId || !decoded?.deviceId) {
                 return ctx.unauthorized('Invalid token payload');
@@ -38,7 +38,7 @@ module.exports = (config, { strapi }) => {
             await next();
 
         } catch (error) {
-            console.log(`error in token -> -> `, error);
+            // console.log(`error in token -> -> `, error);
 
             if (error.name === 'JsonWebTokenError') {
                 if (error.message.includes('invalid algorithm')) {

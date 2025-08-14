@@ -24,6 +24,12 @@ module.exports = createCoreService('api::prize.prize', ({ strapi }) => ({
         if (!runningPhase)
             throw new Error('No running phase found for this contest!!');
 
+        // updating resultDeclaration key i.e., "isResultDeclared"
+        await strapi.db.query('api::phase.phase').update({
+            where: { id: runningPhase.id },
+            data: { isResultDeclared: true }
+        })
+
         const prizes = runningPhase?.prizes || [];
         if (!prizes?.length)
             throw new Error('No Prize(s) are available!!')

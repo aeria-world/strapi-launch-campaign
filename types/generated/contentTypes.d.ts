@@ -701,6 +701,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.String & Schema.Attribute.Required;
     gifts: Schema.Attribute.Relation<'oneToMany', 'api::gift.gift'>;
     image: Schema.Attribute.Media<'images', true>;
+    isBetterLuck: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

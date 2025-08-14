@@ -31,7 +31,7 @@ module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
                     fields: ['totalQuantity', 'allocatedQuantity', 'probability'],
                     populate: {
                         product: {
-                            fields: ['title', 'description', 'worth'],
+                            fields: ['title', 'description', 'worth', 'isBetterLuck'],
                             populate: { image: { fields: ['url', 'name'] } }
                         }
                     }
