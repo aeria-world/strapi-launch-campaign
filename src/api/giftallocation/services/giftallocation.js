@@ -49,86 +49,8 @@ module.exports = {
             console.log('Max probability prize -> ', prizeInfo);
         }
 
-        // TODO: If no current phase, find the most recent previous phase where the customer participated
-        // if (!currentPhase) {
-        //     let today = new Date().toISOString().split('T')[0];
-        //     console.log('today -> ', today);
-
-        //     // Find all phases for the contest where the customer participated
-        //     const customerEnrollments = await strapi.db.query('api::contest-enrollment.contest-enrollment').findMany({
-        //         where: {
-        //             contests: { id: contestInfo.id },
-        //             customers: {
-        //                 $or: [
-        //                     { upin: customerInfo.upin },
-        //                     { deviceId: customerInfo.deviceId }
-        //                 ]
-        //             },
-        //             publishedAt: { $ne: null }
-        //         },
-        //         select: ['enrollmentDate'],
-        //         populate: {
-        //             contests: {
-        //                 select: ['id'],
-        //                 populate: {
-        //                     phases: {
-        //                         select: ['id', 'endDate', 'isResultDeclared'],
-        //                         where: {
-        //                             endDate: { $lt: today },
-        //                             isResultDeclared: true
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     });
-
-        //     console.log('customerEnrollments -> ', customerEnrollments);
-
-        //     // Extract phases where the customer participated
-        //     let participatedPhase = null;
-        //     if (customerEnrollments.length > 0) {
-        //         // Flatten and filter valid phases
-        //         const phases = customerEnrollments
-        //             .flatMap(enrollment => enrollment.contests?.phases || [])
-        //             .filter(phase => phase && phase.isResultDeclared && new Date(phase.endDate) < new Date(today));
-
-        //         console.log('@@@@@', phases)
-
-        //         // Find the most recent phase
-        //         if (phases.length > 0) {
-        //             participatedPhase = phases.sort((a, b) => {
-        //                 const dateA = new Date(a.endDate).getTime();
-        //                 const dateB = new Date(b.endDate).getTime();
-        //                 return dateB - dateA;
-        //             })[0];
-        //             console.log('participatedPhase -> ', participatedPhase);
-        //         }
-        //     }
-
-        //     // If a participated phase is found, fetch its full details
-        //     if (participatedPhase) {
-        //         currentPhase = await strapi.db.query('api::phase.phase').findOne({
-        //             where: { id: participatedPhase.id },
-        //             populate: {
-        //                 prizes: {
-        //                     fields: ['totalQuantity', 'allocatedQuantity', 'probability'],
-        //                     populate: {
-        //                         product: {
-        //                             fields: ['title', 'description', 'worth'],
-        //                             populate: { image: { fields: ['url', 'name'] } }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //         console.log('Fetched participated phase -> ', currentPhase);
-        //     }
-        // }
-
-        console.log('second currentPhase -> ', currentPhase);
-
-        let phaseInfo = {
+        let phaseInfo = {};
+        phaseInfo = {
             endDate: currentPhase?.endDate || '',
             isResultDeclared: currentPhase?.isResultDeclared || false,
             documentId: currentPhase?.documentId || '',
@@ -152,6 +74,7 @@ module.exports = {
         // Check if the user already won in the provided contest
         const existingGift = await checkExistingGift(contestId, userInfo);
         console.log('existingGift -> ', existingGift);
+
         if (existingGift && Object.keys(existingGift).length) {
             return {
                 ...existingGift,
@@ -161,7 +84,7 @@ module.exports = {
                     name: customerInfo?.name || '',
                     companyName: customerInfo?.companyName || ''
                 },
-                phase: phaseInfo
+                phase: await getPhaseInfoForResponse(contestInfo, existingGift, phaseInfo)
             };
         }
 
@@ -177,7 +100,7 @@ module.exports = {
                 name: customerInfo?.name || '',
                 companyName: customerInfo?.companyName || ''
             },
-            phase: phaseInfo
+            phase: await getPhaseInfoForResponse(contestInfo, null, phaseInfo)
         }
     }
 };
@@ -536,4 +459,79 @@ function generateAlphaNumericCode() {
     code = code.split('').sort(() => Math.random() - 0.5).join('');
 
     return code;
+}
+
+// Function to get appropriate phase information for response
+async function getPhaseInfoForResponse(contestInfo, existingGift, defaultPhaseInfo) {
+    // If customer won a prize, return the won phase info
+    if (existingGift?.prize && Object.keys(existingGift.prize)?.length) {
+        const wonPhaseInfo = await getWonPhaseInfo(contestInfo, existingGift);
+        if (wonPhaseInfo) {
+            return wonPhaseInfo;
+        }
+    }
+
+    // Return default phase info (current running phase)
+    return defaultPhaseInfo;
+}
+
+
+async function getWonPhaseInfo(contestInfo, existingGift) {
+    try {
+        // Fetch the phase information for the won prize
+        const wonPhase = await strapi.db.query('api::phase.phase').findOne({
+            where: {
+                contest: { id: contestInfo.id },
+                prizes: { id: existingGift.prize.id }
+            },
+            select: ['documentId', 'endDate', 'isResultDeclared'],
+            populate: {
+                prizes: {
+                    where: { id: existingGift.prize.id },
+                    select: ['documentId'],
+                    populate: {
+                        product: {
+                            select: ['documentId', 'title', 'description', 'worth'],
+                            populate: {
+                                image: {
+                                    select: ['name', 'url']
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!wonPhase) {
+            console.log('No phase found for the won prize');
+            return null;
+        }
+
+        const wonPrize = wonPhase.prizes?.[0];
+
+        return {
+            endDate: wonPhase.endDate || '',
+            isResultDeclared: wonPhase.isResultDeclared || false,
+            documentId: wonPhase.documentId || '',
+            prizeInfo: {
+                documentId: wonPrize?.documentId || '',
+                congratulationHeading: wonPrize?.congratulationHeading || '',
+                product: {
+                    documentId: wonPrize?.product?.documentId || '',
+                    title: wonPrize?.product?.title || '',
+                    description: wonPrize?.product?.description || '',
+                    worth: wonPrize?.product?.worth || '',
+                    image: wonPrize?.product?.image?.length ? wonPrize.product.image.map(img => ({
+                        documentId: img?.documentId || '',
+                        name: img?.name || '',
+                        url: img?.url || ''
+                    })) : []
+                }
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching won phase info:', error);
+        return null;
+    }
 }

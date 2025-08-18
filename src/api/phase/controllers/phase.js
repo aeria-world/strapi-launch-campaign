@@ -97,7 +97,9 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                                 return {
                                     url: image?.url || ''
                                 }
-                            }) : []
+                            }) : [],
+                            worth: enrollmentGift?.gift?.product?.worth || '',
+                            description: enrollmentGift?.gift?.product?.description || ''
                         }
                     },
                     prize: {
@@ -109,7 +111,9 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                                 return {
                                     url: image?.url || ''
                                 }
-                            }) : []
+                            }) : [],
+                            worth: enrollmentGift?.gift?.product?.worth || '',
+                            description: enrollmentGift?.gift?.product?.description || ''
                         }
                     }
                 }
