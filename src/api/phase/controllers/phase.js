@@ -30,9 +30,19 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                 return !(prize?.product?.isBetterLuck === true);
             });
 
+            let prizeInfo = null;
+            if (filteredPrizes?.length) {
+                const prizes = filteredPrizes.filter(Boolean);
+                const maxProbability = Math.max(
+                    ...prizes.map(p => Number(p?.probability || 0))
+                );
+                prizeInfo = prizes.find(p => Number(p?.probability || 0) === maxProbability) || null;
+            }
+
             let data = {
                 documentId: currentPhaseInfo?.documentId || '',
                 endDate: currentPhaseInfo?.endDate || '',
+                isResultDeclared: currentPhaseInfo?.isResultDeclared || false,
                 prizes: filteredPrizes?.length ? filteredPrizes.map(function (prize) {
                     return {
                         documentId: prize?.documentId || '',
@@ -55,11 +65,26 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                     upin: customerInfo?.upin || '',
                     deviceId: customerInfo?.deviceId || '',
                     name: customerInfo?.name || 'N/A'
+                },
+                prizeInfo: {
+                    documentId: prizeInfo?.documentId || '',
+                    congratulationHeading: prizeInfo?.congratulationHeading || '',
+                    product: {
+                        documentId: prizeInfo?.product?.documentId || '',
+                        title: prizeInfo?.product?.title || '',
+                        description: prizeInfo?.product?.description || '',
+                        worth: prizeInfo?.product?.worth || '',
+                        image: prizeInfo?.product?.image?.length ? prizeInfo.product?.image.map(img => ({
+                            documentId: img?.documentId || '',
+                            name: img?.name || '',
+                            url: img?.url || ''
+                        })) : []
+                    }
                 }
             }
 
             const enrollmentGift = await checkExistingGift(contestId, ctx.state.user);
-            console.log('enrollmentGift -> ', enrollmentGift)
+            console.log('enrollmentGift -> ', JSON.stringify(enrollmentGift))
             if (enrollmentGift && Object.keys(enrollmentGift).length) {
                 data['enrollmentGift'] = {
                     giftClaimedAt: enrollmentGift?.giftClaimedAt || '',
@@ -70,7 +95,18 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                             title: enrollmentGift?.gift?.product?.title || 'N/A',
                             image: enrollmentGift?.gift?.product?.image?.length ? enrollmentGift?.gift?.product?.image.map(function (image) {
                                 return {
-                                    documentId: image?.documentId || '',
+                                    url: image?.url || ''
+                                }
+                            }) : []
+                        }
+                    },
+                    prize: {
+                        documentId: enrollmentGift?.prize?.documentId || '',
+                        product: {
+                            title: enrollmentGift?.prize?.product?.title || 'N/A',
+                            isBetterLuck: enrollmentGift?.prize?.product?.isBetterLuck || false,
+                            image: enrollmentGift?.prize?.product?.image?.length ? enrollmentGift?.prize?.product?.image.map(function (image) {
+                                return {
                                     url: image?.url || ''
                                 }
                             }) : []
@@ -115,7 +151,7 @@ async function checkExistingGift(contestId, userInfo) {
                     select: ['documentId', 'congratulationHeading'],
                     populate: {
                         product: {
-                            select: ['documentId', 'title', 'description', 'worth'],
+                            select: ['documentId', 'title', 'description', 'worth', 'isBetterLuck'],
                             populate: {
                                 image: {
                                     select: ['url', 'name']
@@ -128,7 +164,7 @@ async function checkExistingGift(contestId, userInfo) {
                     select: ['documentId'],
                     populate: {
                         product: {
-                            select: ['documentId', 'title', 'description', 'worth'],
+                            select: ['documentId', 'title', 'description', 'worth', 'isBetterLuck'],
                             populate: {
                                 image: {
                                     select: ['url', 'name']

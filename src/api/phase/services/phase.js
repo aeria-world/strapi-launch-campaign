@@ -36,7 +36,8 @@ module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
                         }
                     }
                 }
-            }
+            },
+            orderBy: { endDate: 'asc' }
         });
 
         return currentPhase;

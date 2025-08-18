@@ -32,7 +32,7 @@
     },
     "phase": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::phase.phase",
       "inversedBy": "prizes"
     },

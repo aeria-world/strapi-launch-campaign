@@ -49,7 +49,7 @@ module.exports = {
             console.log('Max probability prize -> ', prizeInfo);
         }
 
-        // If no current phase, find the most recent previous phase where the customer participated
+        // TODO: If no current phase, find the most recent previous phase where the customer participated
         // if (!currentPhase) {
         //     let today = new Date().toISOString().split('T')[0];
         //     console.log('today -> ', today);

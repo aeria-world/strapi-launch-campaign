@@ -626,7 +626,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::phase.phase'> &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    prizes: Schema.Attribute.Relation<'oneToMany', 'api::prize.prize'>;
+    prizes: Schema.Attribute.Relation<'manyToMany', 'api::prize.prize'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -664,7 +664,7 @@ export interface ApiPrizePrize extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     minEnrollment: Schema.Attribute.BigInteger &
       Schema.Attribute.DefaultTo<'0'>;
-    phase: Schema.Attribute.Relation<'manyToOne', 'api::phase.phase'>;
+    phase: Schema.Attribute.Relation<'manyToMany', 'api::phase.phase'>;
     probability: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
