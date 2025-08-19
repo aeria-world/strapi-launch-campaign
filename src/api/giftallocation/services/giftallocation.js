@@ -465,7 +465,7 @@ function generateAlphaNumericCode() {
 async function getPhaseInfoForResponse(contestInfo, existingGift, defaultPhaseInfo) {
     // If customer won a prize, return the won phase info
     if (existingGift?.prize && Object.keys(existingGift.prize)?.length) {
-        const wonPhaseInfo = await getWonPhaseInfo(contestInfo, existingGift);
+        const wonPhaseInfo = await getWonPhaseInfo(contestInfo, existingGift, defaultPhaseInfo);
         if (wonPhaseInfo) {
             return wonPhaseInfo;
         }
@@ -476,7 +476,7 @@ async function getPhaseInfoForResponse(contestInfo, existingGift, defaultPhaseIn
 }
 
 
-async function getWonPhaseInfo(contestInfo, existingGift) {
+async function getWonPhaseInfo(contestInfo, existingGift, defaultPhaseInfo) {
     try {
         // Fetch the phase information for the won prize
         const wonPhase = await strapi.db.query('api::phase.phase').findOne({
@@ -532,6 +532,6 @@ async function getWonPhaseInfo(contestInfo, existingGift) {
         };
     } catch (error) {
         console.error('Error fetching won phase info:', error);
-        return null;
+        return defaultPhaseInfo;
     }
 }
