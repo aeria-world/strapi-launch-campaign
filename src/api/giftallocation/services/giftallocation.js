@@ -6,6 +6,15 @@ const shuffle = require('lodash/shuffle');
  * giftallocation service
  */
 
+class AppError extends Error {
+    constructor(message, code, status, data) {
+        super(message);
+        this.code = code;
+        this.status = status;
+        this.data = data;
+    }
+}
+
 // immediate[Enrollment(Contest-Enrollment)] provide gift to the user
 // Phase [Prize(s) randomly distributes to all the enrollments]
 
@@ -89,7 +98,7 @@ module.exports = {
         }
 
         const response = (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
-            ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo)
+            ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, await getPhaseInfoForResponse(contestInfo, null, phaseInfo))
             : await allocatedGiftsWithQuantity(contestInfo, customerInfo);
 
         return {
@@ -227,16 +236,15 @@ async function getOrCreateCustomer(userInfo) {
 }
 
 // Helper function to allocate gift with probability with maxGifts
-async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo) {
+async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, phaseForError) {
     // 1. Check if maxGifts limit is reached
     const allocatedGiftsCount = await strapi.db.query('api::contest-enrollment.contest-enrollment').count({
         where: { contests: contestInfo.id, publishedAt: { $ne: null } },
     });
     console.log('allocatedGiftsCount ->', allocatedGiftsCount);
 
-    if (allocatedGiftsCount >= Number(contestInfo?.maxGifts)) {
-        throw new Error('All gift(s) has been allocated!!');
-    }
+    if (allocatedGiftsCount >= Number(contestInfo?.maxGifts))
+        throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
 
     // Get gifts with their current data including allocatedQuantity
     const availableGifts = await strapi.db.query('api::gift.gift').findMany({

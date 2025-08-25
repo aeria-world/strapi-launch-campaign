@@ -18,8 +18,13 @@ module.exports = {
     } catch (err) {
       console.log('error in allocateGift -> ', err)
       console.log('error message', err.message)
-      ctx.status = 500;
-      ctx.body = { error: err.message || err.toString() };
+      ctx.status = err.status || 500;
+      ctx.body = {
+        error: err.message || err.toString(),
+        code: err.code || 'INTERNAL_ERROR',
+        phase: err?.data?.phase,
+        customerInfo: err?.data?.customerInfo
+      };
     }
   }
 };
