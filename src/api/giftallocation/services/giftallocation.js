@@ -99,7 +99,7 @@ module.exports = {
 
         const response = (contestInfo?.maxGifts && Number(contestInfo?.maxGifts) > 0)
             ? await allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, await getPhaseInfoForResponse(contestInfo, null, phaseInfo))
-            : await allocatedGiftsWithQuantity(contestInfo, customerInfo);
+            : await allocatedGiftsWithQuantity(contestInfo, customerInfo, await getPhaseInfoForResponse(contestInfo, null, phaseInfo));
 
         return {
             ...response,
@@ -256,7 +256,8 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, phaseFo
     });
 
     if (availableGifts.length === 0)
-        throw new Error('No gifts available for allocation!');
+        // throw new Error('No gifts available for allocation!');
+        throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
 
     // 2. Set default probability if not available
     const giftsWithProbability = availableGifts.map(gift => ({
@@ -354,12 +355,13 @@ function selectGiftByProbability(gifts) {
 }
 
 // Helper function to allocate gift based on random selection based on totalQty and allocatedQty
-async function allocatedGiftsWithQuantity(contestInfo, customerInfo) {
+async function allocatedGiftsWithQuantity(contestInfo, customerInfo, phaseForError) {
     // 1. Filter gifts with totalQuantity > 0
     const availableGifts = contestInfo.gifts.filter(gift => gift.totalQuantity > 0);
 
     if (!availableGifts.length)
-        throw new Error('No gifts available!!');
+        // throw new Error('No gifts available!!');
+        throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
 
     console.log('Available gifts with remaining quantity:', availableGifts);
 
