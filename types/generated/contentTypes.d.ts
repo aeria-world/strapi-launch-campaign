@@ -614,7 +614,7 @@ export interface ApiPhasePhase extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    bannerImage: Schema.Attribute.Media<'images', true>;
+    bannerImage: Schema.Attribute.Media<'images'>;
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

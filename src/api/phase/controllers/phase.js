@@ -43,6 +43,7 @@ module.exports = createCoreController('api::phase.phase', ({ strapi }) => ({
                 documentId: currentPhaseInfo?.documentId || '',
                 endDate: currentPhaseInfo?.endDate || '',
                 isResultDeclared: currentPhaseInfo?.isResultDeclared || false,
+                bannerImage: currentPhaseInfo?.bannerImage,
                 prizes: filteredPrizes?.length ? filteredPrizes.map(function (prize) {
                     return {
                         documentId: prize?.documentId || '',

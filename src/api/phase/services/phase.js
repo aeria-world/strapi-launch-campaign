@@ -35,6 +35,9 @@ module.exports = createCoreService('api::phase.phase', ({ strapi }) => ({
                             populate: { image: { fields: ['url', 'name'] } }
                         }
                     }
+                },
+                bannerImage: {
+                    select: ['url', 'name']
                 }
             },
             orderBy: { endDate: 'asc' }
