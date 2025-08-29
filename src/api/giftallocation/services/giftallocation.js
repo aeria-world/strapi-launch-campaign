@@ -142,7 +142,7 @@ async function checkExistingGift(contestId, userInfo) {
                     select: ['documentId'],
                     populate: {
                         product: {
-                            select: ['documentId', 'title', 'description', 'worth'],
+                            select: ['documentId', 'title', 'description', 'worth', 'isBetterLuck'],
                             populate: {
                                 image: {
                                     select: ['url', 'name']
