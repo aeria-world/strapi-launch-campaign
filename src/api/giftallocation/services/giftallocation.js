@@ -476,7 +476,9 @@ async function getPhaseInfoForResponse(contestInfo, existingGift, defaultPhaseIn
     // If customer won a prize, return the won phase info
     if (existingGift?.prize && Object.keys(existingGift.prize)?.length) {
         const wonPhaseInfo = await getWonPhaseInfo(contestInfo, existingGift, defaultPhaseInfo);
-        if (wonPhaseInfo) {
+        if (wonPhaseInfo && wonPhaseInfo?.prizeInfo?.product?.isBetterLuck) {
+            return defaultPhaseInfo;
+        } else {
             return wonPhaseInfo;
         }
     }
