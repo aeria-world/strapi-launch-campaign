@@ -501,7 +501,7 @@ async function getWonPhaseInfo(contestInfo, existingGift, defaultPhaseInfo) {
                     select: ['documentId'],
                     populate: {
                         product: {
-                            select: ['documentId', 'title', 'description', 'worth'],
+                            select: ['documentId', 'title', 'description', 'worth', 'isBetterLuck'],
                             populate: {
                                 image: {
                                     select: ['name', 'url']
@@ -536,7 +536,8 @@ async function getWonPhaseInfo(contestInfo, existingGift, defaultPhaseInfo) {
                         documentId: img?.documentId || '',
                         name: img?.name || '',
                         url: img?.url || ''
-                    })) : []
+                    })) : [],
+                    isBetterLuck: wonPrize?.product?.isBetterLuck || false
                 }
             }
         };
