@@ -46,7 +46,7 @@
       "inversedBy": "gifts"
     },
     "congratulationHeading": {
-      "type": "text",
+      "type": "string",
       "default": "Congratulations",
       "required": false
     }

@@ -533,7 +533,7 @@ export interface ApiGiftGift extends Struct.CollectionTypeSchema {
         },
         string
       >;
-    congratulationHeading: Schema.Attribute.Text &
+    congratulationHeading: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Congratulations'>;
     contest: Schema.Attribute.Relation<'manyToOne', 'api::contest.contest'>;
     contest_enrollments: Schema.Attribute.Relation<
