@@ -243,8 +243,22 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, phaseFo
     });
     console.log('allocatedGiftsCount ->', allocatedGiftsCount);
 
-    if (allocatedGiftsCount >= Number(contestInfo?.maxGifts))
+    if (allocatedGiftsCount >= Number(contestInfo?.maxGifts)) {
+        let redemptionCode = await generateUniqueAlphaNumericCode();
+
+        await strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
+            data: {
+                contests: { id: contestInfo.id },
+                customers: { id: customerInfo.id },
+                gift: null,
+                giftAllocatedAt: new Date(),
+                redemptionCode: redemptionCode,
+                enrollmentDate: new Date(),
+                publishedAt: new Date()
+            },
+        })
         throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
+    }
 
     // Get gifts with their current data including allocatedQuantity
     const availableGifts = await strapi.db.query('api::gift.gift').findMany({
@@ -255,9 +269,23 @@ async function allocatedGiftsWithProbMaxGifts(contestInfo, customerInfo, phaseFo
         select: ['id', 'probability', 'allocatedQuantity', 'totalQuantity', 'congratulationHeading']
     });
 
-    if (availableGifts.length === 0)
+    if (availableGifts.length === 0) {
+        let redemptionCode = await generateUniqueAlphaNumericCode();
+        await strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
+            data: {
+                contests: { id: contestInfo.id },
+                customers: { id: customerInfo.id },
+                gift: null,
+                giftAllocatedAt: new Date(),
+                redemptionCode: redemptionCode,
+                enrollmentDate: new Date(),
+                publishedAt: new Date()
+            },
+        })
+
         // throw new Error('No gifts available for allocation!');
         throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
+    }
 
     // 2. Set default probability if not available
     const giftsWithProbability = availableGifts.map(gift => ({
@@ -359,9 +387,23 @@ async function allocatedGiftsWithQuantity(contestInfo, customerInfo, phaseForErr
     // 1. Filter gifts with totalQuantity > 0
     const availableGifts = contestInfo.gifts.filter(gift => gift.totalQuantity > 0);
 
-    if (!availableGifts.length)
+    if (!availableGifts.length) {
+        let redemptionCode = await generateUniqueAlphaNumericCode();
+        await strapi.entityService.create('api::contest-enrollment.contest-enrollment', {
+            data: {
+                contests: { id: contestInfo.id },
+                customers: { id: customerInfo.id },
+                gift: null,
+                giftAllocatedAt: new Date(),
+                redemptionCode: redemptionCode,
+                enrollmentDate: new Date(),
+                publishedAt: new Date()
+            },
+        })
+
         // throw new Error('No gifts available!!');
         throw new AppError('All gift(s) has been allocated!!', 'MAX_GIFTS_REACHED', 409, { phase: phaseForError, customerInfo });
+    }
 
     console.log('Available gifts with remaining quantity:', availableGifts);
 
