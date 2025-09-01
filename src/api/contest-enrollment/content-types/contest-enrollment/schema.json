@@ -52,7 +52,7 @@
       "type": "datetime"
     },
     "redemptionCode": {
-      "type": "text",
+      "type": "string",
       "required": true
     }
   }

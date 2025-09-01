@@ -433,7 +433,7 @@ export interface ApiContestEnrollmentContestEnrollment
     prizeAllocatedAt: Schema.Attribute.DateTime;
     prizeClaimedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
-    redemptionCode: Schema.Attribute.Text & Schema.Attribute.Required;
+    redemptionCode: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
