@@ -12,17 +12,17 @@
   "pluginOptions": {},
   "attributes": {
     "upin": {
-      "type": "text",
+      "type": "string",
       "required": true,
       "unique": true
     },
     "deviceId": {
-      "type": "text",
+      "type": "string",
       "required": true,
       "unique": true
     },
     "name": {
-      "type": "text"
+      "type": "string"
     },
     "contest_enrollment": {
       "type": "relation",
@@ -31,7 +31,7 @@
       "inversedBy": "customers"
     },
     "companyName": {
-      "type": "text"
+      "type": "string"
     }
   }
 }

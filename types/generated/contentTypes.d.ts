@@ -487,7 +487,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    companyName: Schema.Attribute.Text;
+    companyName: Schema.Attribute.String;
     contest_enrollment: Schema.Attribute.Relation<
       'manyToOne',
       'api::contest-enrollment.contest-enrollment'
@@ -495,7 +495,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    deviceId: Schema.Attribute.Text &
+    deviceId: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -504,12 +504,12 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
       'api::customer.customer'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.Text;
+    name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    upin: Schema.Attribute.Text &
+    upin: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
   };
