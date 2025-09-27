@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contests",
+  "info": {
+    "singularName": "contest",
+    "pluralName": "contests",
+    "displayName": "Contest"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "isActive": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "contest_enrollments": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::contest-enrollment.contest-enrollment",
+      "inversedBy": "contests"
+    },
+    "maxGifts": {
+      "type": "biginteger"
+    },
+    "phases": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::phase.phase",
+      "mappedBy": "contest"
+    },
+    "gifts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::gift.gift",
+      "mappedBy": "contest"
+    }
+  }
+}

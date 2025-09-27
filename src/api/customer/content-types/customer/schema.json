@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "customers",
+  "info": {
+    "singularName": "customer",
+    "pluralName": "customers",
+    "displayName": "Customer"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "upin": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "deviceId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "contest_enrollment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest-enrollment.contest-enrollment",
+      "inversedBy": "customers"
+    },
+    "companyName": {
+      "type": "string"
+    }
+  }
+}

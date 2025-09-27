@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contest_enrollments",
+  "info": {
+    "singularName": "contest-enrollment",
+    "pluralName": "contest-enrollments",
+    "displayName": "Contest Enrollments"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "contests": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::contest.contest",
+      "mappedBy": "contest_enrollments"
+    },
+    "customers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::customer.customer",
+      "mappedBy": "contest_enrollment"
+    },
+    "enrollmentDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "gift": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::gift.gift",
+      "inversedBy": "contest_enrollments"
+    },
+    "giftAllocatedAt": {
+      "type": "datetime"
+    },
+    "giftClaimedAt": {
+      "type": "datetime"
+    },
+    "prize": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::prize.prize",
+      "inversedBy": "contest_enrollments"
+    },
+    "prizeAllocatedAt": {
+      "type": "datetime"
+    },
+    "prizeClaimedAt": {
+      "type": "datetime"
+    },
+    "redemptionCode": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

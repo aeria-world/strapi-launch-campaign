@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "prizes",
+  "info": {
+    "singularName": "prize",
+    "pluralName": "prizes",
+    "displayName": "Prize"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "totalQuantity": {
+      "type": "biginteger"
+    },
+    "allocatedQuantity": {
+      "type": "biginteger",
+      "min": "0"
+    },
+    "probability": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "prizes"
+    },
+    "phase": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::phase.phase",
+      "inversedBy": "prizes"
+    },
+    "contest_enrollments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::contest-enrollment.contest-enrollment",
+      "mappedBy": "prize"
+    },
+    "minEnrollment": {
+      "type": "biginteger",
+      "default": "0"
+    }
+  }
+}

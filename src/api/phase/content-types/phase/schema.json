@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "phases",
+  "info": {
+    "singularName": "phase",
+    "pluralName": "phases",
+    "displayName": "Phase"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "endDate": {
+      "type": "date"
+    },
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "phases"
+    },
+    "prizes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::prize.prize",
+      "mappedBy": "phase"
+    },
+    "isResultDeclared": {
+      "type": "boolean",
+      "default": false
+    },
+    "bannerImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}
